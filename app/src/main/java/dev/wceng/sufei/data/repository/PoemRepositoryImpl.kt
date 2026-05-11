@@ -28,6 +28,14 @@ import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
 
+/*
+Flow<List<PoemEntity>>
+    → 外层 map：List<PoemEntity>
+        → 内层 map: PoemEntity → UserPoem
+    → 外层 map：List<UserPoem>
+Flow<List<UserPoem>>
+ */
+
 @Singleton
 class PoemRepositoryImpl @Inject constructor(
     private val poemDao: PoemDao,
