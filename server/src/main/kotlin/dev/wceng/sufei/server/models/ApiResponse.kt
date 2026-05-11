@@ -78,3 +78,8 @@ data class SearchResultResponse(
     val poets: List<PoetListItem> = emptyList()
 )
 
+@Serializable
+data class FavoriteCheckResponse(
+    val favorited: Boolean
+)
+

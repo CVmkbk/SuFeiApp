@@ -3,8 +3,10 @@ package dev.wceng.sufei.server
 import dev.wceng.sufei.server.data.JsonlImporter
 import dev.wceng.sufei.server.database.DatabaseFactory
 import dev.wceng.sufei.server.plugins.configureMonitoring
+import dev.wceng.sufei.server.plugins.configureSecurity
 import dev.wceng.sufei.server.plugins.configureSerialization
 import dev.wceng.sufei.server.routes.*
+import dev.wceng.sufei.server.service.UserService
 import io.ktor.http.*
 import io.ktor.server.application.*
 import io.ktor.server.netty.*
@@ -17,9 +19,11 @@ fun main(args: Array<String>) {
 
 fun Application.module() {
     DatabaseFactory.init(environment.config)
+    UserService.init(environment.config)
 
     configureSerialization()
     configureMonitoring()
+    configureSecurity()
 
     routing {
         get("/health") {
@@ -41,5 +45,7 @@ fun Application.module() {
         tagRoutes()
         tuneRoutes()
         searchRoutes()
+        userRoutes()
+        favoriteRoutes()
     }
 }
