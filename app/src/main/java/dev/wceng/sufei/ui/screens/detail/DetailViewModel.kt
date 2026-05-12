@@ -8,6 +8,8 @@ import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.wceng.sufei.data.model.UserPoem
 import dev.wceng.sufei.data.model.UserPreferences
+import dev.wceng.sufei.data.network.TokenManager
+import dev.wceng.sufei.data.network.api.FavoriteApiService
 import dev.wceng.sufei.data.repository.PoemRepository
 import dev.wceng.sufei.data.repository.UserPreferencesRepository
 import dev.wceng.sufei.data.tts.TtsManager
@@ -20,6 +22,8 @@ class DetailViewModel @AssistedInject constructor(
     private val poemRepository: PoemRepository,
     private val userPreferencesRepository: UserPreferencesRepository,
     private val ttsManager: TtsManager,
+    private val tokenManager: TokenManager,
+    private val favoriteApiService: FavoriteApiService,
     @Assisted val detail: Detail
 ) : ViewModel() {
 
@@ -47,6 +51,13 @@ class DetailViewModel @AssistedInject constructor(
     fun toggleFavorite(isFavorite: Boolean) {
         viewModelScope.launch {
             userPreferencesRepository.toggleFavorite(detail.id, isFavorite)
+            if (tokenManager.isLoggedIn) {
+                if (isFavorite) {
+                    favoriteApiService.addFavorite(detail.id)
+                } else {
+                    favoriteApiService.removeFavorite(detail.id)
+                }
+            }
         }
     }
 

@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Palette
 import androidx.compose.material.icons.filled.TextFormat
 import androidx.compose.material3.*
@@ -20,16 +21,20 @@ import dev.wceng.sufei.ui.theme.SuFeiTheme
 
 @Composable
 fun SettingsScreen(
+    onLoginClick: () -> Unit = {},
     viewModel: SettingsViewModel = hiltViewModel()
 ) {
     val userPreferences by viewModel.userPreferences.collectAsState()
 
     SettingsContent(
         userPreferences = userPreferences,
+        isLoggedIn = viewModel.isLoggedIn,
         onFontSizeChange = viewModel::setFontSizeMultiplier,
         onLineHeightChange = viewModel::setLineHeightMultiplier,
         onDynamicColorToggle = viewModel::setUseDynamicColor,
-        onFontFamilyChange = viewModel::setFontFamilyName
+        onFontFamilyChange = viewModel::setFontFamilyName,
+        onLoginClick = onLoginClick,
+        onLogoutClick = viewModel::logout
     )
 }
 
@@ -37,10 +42,13 @@ fun SettingsScreen(
 @Composable
 fun SettingsContent(
     userPreferences: UserPreferences,
+    isLoggedIn: Boolean = false,
     onFontSizeChange: (Float) -> Unit,
     onLineHeightChange: (Float) -> Unit,
     onDynamicColorToggle: (Boolean) -> Unit,
-    onFontFamilyChange: (String) -> Unit
+    onFontFamilyChange: (String) -> Unit,
+    onLoginClick: () -> Unit = {},
+    onLogoutClick: () -> Unit = {}
 ) {
     Scaffold(
         topBar = {
@@ -89,6 +97,26 @@ fun SettingsContent(
                 onCheckedChange = onDynamicColorToggle
             )
             
+            // 账号组
+            Spacer(modifier = Modifier.height(24.dp))
+            SettingsSectionTitle(title = "账号", icon = Icons.Default.AccountCircle)
+
+            if (isLoggedIn) {
+                OutlinedButton(
+                    onClick = onLogoutClick,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("退出登录")
+                }
+            } else {
+                Button(
+                    onClick = onLoginClick,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("登录 / 注册")
+                }
+            }
+
             // 更多信息
             Spacer(modifier = Modifier.height(48.dp))
             Text(
@@ -166,10 +194,13 @@ fun SettingsContentPreview() {
     SuFeiTheme {
         SettingsContent(
             userPreferences = UserPreferences(),
+            isLoggedIn = false,
             onFontSizeChange = {},
             onLineHeightChange = {},
             onDynamicColorToggle = {},
-            onFontFamilyChange = {}
+            onFontFamilyChange = {},
+            onLoginClick = {},
+            onLogoutClick = {}
         )
     }
 }

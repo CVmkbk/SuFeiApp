@@ -18,10 +18,12 @@ import dev.wceng.sufei.ui.navigation.Detail
 import dev.wceng.sufei.ui.navigation.EntryProviderInstaller
 import dev.wceng.sufei.ui.navigation.Explore
 import dev.wceng.sufei.ui.navigation.Home
+import dev.wceng.sufei.ui.navigation.Login
 import dev.wceng.sufei.ui.navigation.Navigator
 import dev.wceng.sufei.ui.navigation.PoetDetail
 import dev.wceng.sufei.ui.navigation.Settings
 import dev.wceng.sufei.ui.navigation.Square
+import dev.wceng.sufei.ui.screens.auth.LoginScreen
 import dev.wceng.sufei.ui.screens.collection.CollectionScreen
 import dev.wceng.sufei.ui.screens.detail.DetailScreen
 import dev.wceng.sufei.ui.screens.detail.DetailViewModel
@@ -174,9 +176,22 @@ object ScreensModule {
 
     @IntoSet
     @Provides
-    fun provideSettingsEntry(): EntryProviderInstaller = {
+    fun provideSettingsEntry(navigator: Navigator): EntryProviderInstaller = {
         entry<Settings> {
-            SettingsScreen()
+            SettingsScreen(
+                onLoginClick = { navigator.goTo(Login) }
+            )
+        }
+    }
+
+    @IntoSet
+    @Provides
+    fun provideLoginEntry(navigator: Navigator): EntryProviderInstaller = {
+        entry<Login> {
+            LoginScreen(
+                onBack = { navigator.goBack() },
+                onLoginSuccess = { navigator.goBack() }
+            )
         }
     }
 }

@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.wceng.sufei.data.model.UserPreferences
+import dev.wceng.sufei.data.repository.AuthRepository
 import dev.wceng.sufei.data.repository.UserPreferencesRepository
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -13,7 +14,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
-    private val userPreferencesRepository: UserPreferencesRepository
+    private val userPreferencesRepository: UserPreferencesRepository,
+    private val authRepository: AuthRepository
 ) : ViewModel() {
 
     val userPreferences: StateFlow<UserPreferences> = userPreferencesRepository.userPreferences
@@ -22,6 +24,14 @@ class SettingsViewModel @Inject constructor(
             started = SharingStarted.WhileSubscribed(5000),
             initialValue = UserPreferences()
         )
+
+    val isLoggedIn: Boolean get() = authRepository.isLoggedIn
+
+    fun logout() {
+        viewModelScope.launch {
+            authRepository.logout()
+        }
+    }
 
     fun setFontSizeMultiplier(multiplier: Float) {
         viewModelScope.launch {

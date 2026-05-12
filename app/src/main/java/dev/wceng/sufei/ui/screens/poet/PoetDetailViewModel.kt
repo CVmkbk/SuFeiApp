@@ -8,9 +8,13 @@ import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.wceng.sufei.data.model.Poet
 import dev.wceng.sufei.data.model.UserPoem
+import dev.wceng.sufei.data.network.TokenManager
+import dev.wceng.sufei.data.network.api.FavoriteApiService
 import dev.wceng.sufei.data.repository.PoemRepository
+import dev.wceng.sufei.data.repository.UserPreferencesRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.launch
 
 /**
  * 诗人详情页 UI 状态
@@ -30,7 +34,10 @@ sealed interface PoetDetailUiState {
 @HiltViewModel(assistedFactory = PoetDetailViewModel.Factory::class)
 class PoetDetailViewModel @AssistedInject constructor(
     @Assisted private val poetId: String,
-    private val poemRepository: PoemRepository
+    private val poemRepository: PoemRepository,
+    private val userPreferencesRepository: UserPreferencesRepository,
+    private val tokenManager: TokenManager,
+    private val favoriteApiService: FavoriteApiService
 ) : ViewModel() {
 
     @AssistedFactory
@@ -69,6 +76,15 @@ class PoetDetailViewModel @AssistedInject constructor(
      * 遵循 NiA 风格，ViewModel 暴露具体的方法供 UI 调用
      */
     fun togglePoemFavorite(poemId: String, isFavorite: Boolean) {
-        // TODO: 调用仓库层修改收藏状态
+        viewModelScope.launch {
+            userPreferencesRepository.toggleFavorite(poemId, isFavorite)
+            if (tokenManager.isLoggedIn) {
+                if (isFavorite) {
+                    favoriteApiService.addFavorite(poemId)
+                } else {
+                    favoriteApiService.removeFavorite(poemId)
+                }
+            }
+        }
     }
 }

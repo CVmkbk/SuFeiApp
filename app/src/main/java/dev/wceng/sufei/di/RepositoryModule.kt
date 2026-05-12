@@ -14,14 +14,20 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindPoemRepository(
-        poemRepositoryImpl: PoemRepositoryImpl
+        networkPoemRepositoryImpl: NetworkPoemRepositoryImpl
     ): PoemRepository
 
     @Binds
     @Singleton
     abstract fun bindImportRepository(
-        importRepositoryImpl: ImportRepositoryImpl
+        networkImportRepository: NetworkImportRepository
     ): ImportRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindAuthRepository(
+        authRepositoryImpl: AuthRepositoryImpl
+    ): AuthRepository
 
     @Binds
     @Singleton

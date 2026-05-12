@@ -4,6 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.wceng.sufei.data.model.UserPoem
+import dev.wceng.sufei.data.network.TokenManager
+import dev.wceng.sufei.data.network.api.FavoriteApiService
 import dev.wceng.sufei.data.repository.PoemRepository
 import dev.wceng.sufei.data.repository.UserPreferencesRepository
 import kotlinx.coroutines.flow.SharingStarted
@@ -17,7 +19,9 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val poemRepository: PoemRepository,
-    private val userPreferencesRepository: UserPreferencesRepository
+    private val userPreferencesRepository: UserPreferencesRepository,
+    private val tokenManager: TokenManager,
+    private val favoriteApiService: FavoriteApiService
 ) : ViewModel() {
 
     // 遵循 NiA 风格，将随机诗词展示为响应式流
@@ -39,6 +43,13 @@ class HomeViewModel @Inject constructor(
     fun toggleFavorite(poemId: String, isFavorite: Boolean) {
         viewModelScope.launch {
             userPreferencesRepository.toggleFavorite(poemId, isFavorite)
+            if (tokenManager.isLoggedIn) {
+                if (isFavorite) {
+                    favoriteApiService.addFavorite(poemId)
+                } else {
+                    favoriteApiService.removeFavorite(poemId)
+                }
+            }
         }
     }
 }
