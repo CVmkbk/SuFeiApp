@@ -217,9 +217,26 @@ val surfaceContainerDarkHighContrast = Color(0xFF323027)
 val surfaceContainerHighDarkHighContrast = Color(0xFF3E3B32)
 val surfaceContainerHighestDarkHighContrast = Color(0xFF49473D)
 
+// ==================== 语义色彩 Token ====================
+// 妃红色 — 用于作者印章、收藏图标等古籍美学元素
+val sealRedLight = Color(0xFFE09E87)
+val sealRedDark = Color(0xFFE09E87)
 
+// 统一背景色
+val pageBackgroundLight = Color(0xFFFFF8F6)
+val pageBackgroundDark = Color(0xFF1A110F)
 
+// 卡片背景色
+val cardBackgroundLight = Color(0xFFF5DED7)
+val cardBackgroundDark = Color(0xFF53433E)
 
+// 分割线色
+val dividerColorLight = Color(0xFFD8C2BB)
+val dividerColorDark = Color(0xFF53433E)
+
+// 禁用态文字色
+val disabledTextLight = Color(0xFF85736D)
+val disabledTextDark = Color(0xFFA08D86)
 
 
 

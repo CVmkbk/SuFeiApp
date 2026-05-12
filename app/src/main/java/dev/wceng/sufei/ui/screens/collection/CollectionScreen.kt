@@ -10,7 +10,6 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -19,6 +18,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import dev.wceng.sufei.data.model.Poem
 import dev.wceng.sufei.data.model.UserPoem
 import dev.wceng.sufei.ui.theme.SuFeiTheme
+import dev.wceng.sufei.ui.theme.sealRedLight
 import kotlinx.coroutines.launch
 
 @Composable
@@ -143,7 +143,7 @@ fun FavoritePoemItem(
                 Icon(
                     imageVector = Icons.Default.Favorite,
                     contentDescription = "取消收藏",
-                    tint = Color(0xFFE09E87) // 妃红色
+                    tint = sealRedLight
                 )
             }
         }

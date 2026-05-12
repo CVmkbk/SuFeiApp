@@ -25,8 +25,11 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import dev.wceng.sufei.data.model.Poem
 import dev.wceng.sufei.data.model.UserPoem
+import dev.wceng.sufei.ui.components.MultiColumnVerticalText
+import dev.wceng.sufei.ui.components.VerticalText
 import dev.wceng.sufei.ui.theme.NotoSerifSC
 import dev.wceng.sufei.ui.theme.SuFeiTheme
+import dev.wceng.sufei.ui.theme.sealRedLight
 
 @Composable
 fun HomeScreen(
@@ -58,65 +61,6 @@ fun HomeScreen(
                     modifier = Modifier.align(Alignment.Center)
                 )
             }
-        }
-    }
-}
-
-/**
- * 竖排文本组件，支持标点符号特殊处理
- */
-@Composable
-private fun VerticalText(
-    text: String,
-    modifier: Modifier = Modifier,
-    style: androidx.compose.ui.text.TextStyle = LocalTextStyle.current,
-    spacing: androidx.compose.ui.unit.Dp = 4.dp
-) {
-    Column(
-        modifier = modifier,
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(spacing)
-    ) {
-        text.forEach { char ->
-            val isPunctuation = char == '，' || char == '。' || char == '；' || char == '！' || char == '？'
-            Text(
-                text = char.toString(),
-                style = if (isPunctuation) style.copy(fontSize = style.fontSize * 0.9f) else style,
-                modifier = if (isPunctuation) {
-                    Modifier.offset(x = 3.dp, y = (-3).dp)
-                } else {
-                    Modifier
-                }
-            )
-        }
-    }
-}
-
-/**
- * 多列竖排文本，用于处理过长的标题
- */
-@Composable
-private fun MultiColumnVerticalText(
-    text: String,
-    modifier: Modifier = Modifier,
-    style: androidx.compose.ui.text.TextStyle = LocalTextStyle.current,
-    spacing: androidx.compose.ui.unit.Dp = 4.dp,
-    columnSpacing: androidx.compose.ui.unit.Dp = 12.dp,
-    maxCharsPerColumn: Int = 8
-) {
-    val columns = text.chunked(maxCharsPerColumn)
-    
-    Row(
-        modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy(columnSpacing),
-        verticalAlignment = Alignment.Top
-    ) {
-        columns.asReversed().forEach { columnText ->
-            VerticalText(
-                text = columnText,
-                style = style,
-                spacing = spacing
-            )
         }
     }
 }
@@ -213,15 +157,15 @@ private fun HomeContent(
                 Box(
                     modifier = Modifier
                         .width(IntrinsicSize.Min)
-                        .border(0.8.dp, Color(0xFFE09E87))
-                        .padding(horizontal = 3.dp, vertical = 5.dp)
+                        .border(0.8.dp, sealRedLight)
+                    .padding(horizontal = 3.dp, vertical = 5.dp)
                 ) {
                     VerticalText(
                         text = poem.author,
                         spacing = 2.dp,
                         style = MaterialTheme.typography.bodyMedium.copy(
                             fontFamily = NotoSerifSC,
-                            color = Color(0xFFE09E87),
+                            color = sealRedLight,
                             fontWeight = FontWeight.Medium,
                             fontSize = 12.sp
                         )
@@ -287,7 +231,7 @@ private fun HomeContent(
                 Icon(
                     imageVector = if (userPoem.isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
                     contentDescription = "收藏",
-                    tint = if (userPoem.isFavorite) Color(0xFFE09E87) else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f)
+                    tint = if (userPoem.isFavorite) sealRedLight else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f)
                 )
             }
         }

@@ -21,7 +21,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import dev.wceng.sufei.data.model.Poet
 import dev.wceng.sufei.data.model.PoetDescription
 import dev.wceng.sufei.data.model.UserPoem
-import dev.wceng.sufei.ui.screens.explore.PoemPreviewCard
+import dev.wceng.sufei.ui.components.PoemPreviewCard
 import dev.wceng.sufei.ui.theme.SuFeiTheme
 
 @Composable

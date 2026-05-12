@@ -52,7 +52,9 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import dev.wceng.sufei.data.model.Poem
 import dev.wceng.sufei.data.model.UserPoem
 import dev.wceng.sufei.data.model.UserPreferences
+import dev.wceng.sufei.ui.components.InterpretationSection
 import dev.wceng.sufei.ui.theme.SuFeiTheme
+import dev.wceng.sufei.ui.theme.sealRedLight
 
 @Composable
 fun DetailScreen(
@@ -127,7 +129,7 @@ fun DetailContent(
                             Icon(
                                 imageVector = if (userPoem.isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
                                 contentDescription = "收藏",
-                                tint = if (userPoem.isFavorite) Color(0xFFE09E87) else LocalContentColor.current
+                                tint = if (userPoem.isFavorite) sealRedLight else LocalContentColor.current
                             )
                         }
                     }
@@ -318,33 +320,6 @@ private fun PoemBody(paragraphs: List<String>, userPreferences: UserPreferences,
             }
             Spacer(modifier = Modifier.height(16.dp))
         }
-    }
-}
-
-@Composable
-fun InterpretationSection(title: String, content: String?, multiplier: Float) {
-    if (content.isNullOrBlank()) return
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 16.dp)
-    ) {
-        Text(
-            text = title,
-            style = MaterialTheme.typography.titleMedium.copy(
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.primary,
-                fontSize = (16 * multiplier).sp
-            )
-        )
-        Spacer(modifier = Modifier.height(12.dp))
-        Text(
-            text = content,
-            style = MaterialTheme.typography.bodyLarge.copy(
-                lineHeight = (24 * multiplier).sp,
-                fontSize = (14 * multiplier).sp
-            )
-        )
     }
 }
 
