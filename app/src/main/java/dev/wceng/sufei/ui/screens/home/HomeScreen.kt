@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -57,11 +58,27 @@ fun HomeScreen(
                 )
             }
             is HomeUiState.Error -> {
-                Text(
-                    text = state.message,
-                    color = MaterialTheme.colorScheme.error,
-                    modifier = Modifier.align(Alignment.Center)
-                )
+                Column(
+                    modifier = Modifier.align(Alignment.Center),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = state.message,
+                        color = MaterialTheme.colorScheme.error,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier.padding(horizontal = 32.dp)
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                    OutlinedButton(onClick = { viewModel.refresh() }) {
+                        Icon(
+                            Icons.Default.Refresh,
+                            contentDescription = null,
+                            modifier = Modifier.size(18.dp)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text("重试")
+                    }
+                }
             }
         }
     }

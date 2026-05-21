@@ -11,6 +11,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.foundation.verticalScroll
@@ -19,6 +21,7 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.VolumeUp
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Stop
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -27,6 +30,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SuggestionChip
 import androidx.compose.material3.SuggestionChipDefaults
@@ -51,7 +55,6 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import dev.wceng.sufei.data.model.Poem
 import dev.wceng.sufei.data.model.UserPoem
-import dev.wceng.sufei.data.model.UserPreferences
 import dev.wceng.sufei.ui.components.InterpretationSection
 import dev.wceng.sufei.ui.theme.SuFeiTheme
 import dev.wceng.sufei.ui.theme.sealRedLight
@@ -81,7 +84,8 @@ fun DetailScreen(
         },
         onTtsToggle = { sentences ->
             viewModel.toggleTts(sentences)
-        }
+        },
+        onRefresh = { viewModel.refresh() }
     )
 }
 
@@ -93,7 +97,8 @@ fun DetailContent(
     currentSentenceIndex: Int?,
     onBack: () -> Unit,
     onFavoriteToggle: (Boolean) -> Unit,
-    onTtsToggle: (List<String>) -> Unit
+    onTtsToggle: (List<String>) -> Unit,
+    onRefresh: () -> Unit
 ) {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
 
@@ -155,16 +160,31 @@ fun DetailContent(
                 is DetailUiState.Success -> {
                     PoemReader(
                         userPoem = uiState.userPoem,
-                        userPreferences = uiState.userPreferences,
                         currentSentenceIndex = currentSentenceIndex
                     )
                 }
                 is DetailUiState.Error -> {
-                    Text(
-                        text = uiState.message,
+                    Column(
                         modifier = Modifier.align(Alignment.Center),
-                        color = MaterialTheme.colorScheme.error
-                    )
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            text = uiState.message,
+                            color = MaterialTheme.colorScheme.error,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.padding(horizontal = 32.dp)
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
+                        OutlinedButton(onClick = onRefresh) {
+                            Icon(
+                                Icons.Default.Refresh,
+                                contentDescription = null,
+                                modifier = Modifier.size(18.dp)
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text("重试")
+                        }
+                    }
                 }
             }
         }
@@ -175,7 +195,6 @@ fun DetailContent(
 @Composable
 fun PoemReader(
     userPoem: UserPoem,
-    userPreferences: UserPreferences,
     currentSentenceIndex: Int?,
     modifier: Modifier = Modifier
 ) {
@@ -192,7 +211,7 @@ fun PoemReader(
             text = poem.title,
             style = MaterialTheme.typography.headlineMedium.copy(
                 fontWeight = FontWeight.Bold,
-                fontSize = (20 * userPreferences.fontSizeMultiplier).sp,
+                fontSize = 20.sp,
                 letterSpacing = 2.sp,
                 color = if (currentSentenceIndex == 0) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onBackground
             ),
@@ -207,21 +226,21 @@ fun PoemReader(
                 text = poem.dynasty,
                 style = MaterialTheme.typography.bodyLarge.copy(
                     color = if (currentSentenceIndex == 1) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
-                    fontSize = (14 * userPreferences.fontSizeMultiplier).sp
+                    fontSize = 14.sp
                 )
             )
             Text(
                 text = " · ",
                 style = MaterialTheme.typography.bodyLarge.copy(
                     color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
-                    fontSize = (14 * userPreferences.fontSizeMultiplier).sp
+                    fontSize = 14.sp
                 )
             )
             Text(
                 text = poem.author,
                 style = MaterialTheme.typography.bodyLarge.copy(
                     color = if (currentSentenceIndex == 2) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
-                    fontSize = (14 * userPreferences.fontSizeMultiplier).sp
+                    fontSize = 14.sp
                 )
             )
         }
@@ -241,7 +260,7 @@ fun PoemReader(
                             Text(
                                 text = tag,
                                 style = MaterialTheme.typography.labelSmall.copy(
-                                    fontSize = (11 * userPreferences.fontSizeMultiplier).sp
+                                    fontSize = 11.sp
                                 )
                             )
                         },
@@ -269,10 +288,10 @@ fun PoemReader(
 
         if (isSelectionEnabled) {
             SelectionContainer {
-                PoemBody(paragraphs, userPreferences, currentSentenceIndex)
+                PoemBody(paragraphs, currentSentenceIndex)
             }
         } else {
-            PoemBody(paragraphs, userPreferences, currentSentenceIndex)
+            PoemBody(paragraphs, currentSentenceIndex)
         }
         
         if (!poem.notes.isNullOrBlank() || !poem.translation.isNullOrBlank() || !poem.intro.isNullOrBlank() || !poem.background.isNullOrBlank()) {
@@ -280,10 +299,10 @@ fun PoemReader(
             HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
             Spacer(modifier = Modifier.height(32.dp))
             
-            InterpretationSection(title = "注释", content = poem.notes, multiplier = userPreferences.fontSizeMultiplier)
-            InterpretationSection(title = "译文", content = poem.translation, multiplier = userPreferences.fontSizeMultiplier)
-            InterpretationSection(title = "赏析", content = poem.intro, multiplier = userPreferences.fontSizeMultiplier)
-            InterpretationSection(title = "背景", content = poem.background, multiplier = userPreferences.fontSizeMultiplier)
+            InterpretationSection(title = "注释", content = poem.notes, multiplier = 1.0f)
+            InterpretationSection(title = "译文", content = poem.translation, multiplier = 1.0f)
+            InterpretationSection(title = "赏析", content = poem.intro, multiplier = 1.0f)
+            InterpretationSection(title = "背景", content = poem.background, multiplier = 1.0f)
         }
 
         Spacer(modifier = Modifier.height(64.dp))
@@ -292,7 +311,7 @@ fun PoemReader(
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun PoemBody(paragraphs: List<String>, userPreferences: UserPreferences, currentSentenceIndex: Int?) {
+private fun PoemBody(paragraphs: List<String>, currentSentenceIndex: Int?) {
     var globalVerseIndex = 3 // 从 3 开始，因为 0:标题, 1:朝代, 2:作者
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         paragraphs.forEach { paragraph ->
@@ -307,8 +326,8 @@ private fun PoemBody(paragraphs: List<String>, userPreferences: UserPreferences,
                         text = verse.trim(),
                         style = MaterialTheme.typography.displaySmall.copy(
                             fontWeight = if (isHighlight) FontWeight.Normal else FontWeight.Light,
-                            fontSize = (18 * userPreferences.fontSizeMultiplier).sp,
-                            lineHeight = (32 * userPreferences.lineHeightMultiplier).sp,
+                            fontSize = 18.sp,
+                            lineHeight = 32.sp,
                             letterSpacing = 2.sp,
                             color = if (isHighlight) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onBackground
                         ),
@@ -344,13 +363,13 @@ fun DetailContentPreview() {
                     ),
                     isFavorite = false
                 ),
-                userPreferences = UserPreferences(fontSizeMultiplier = 1.0f, lineHeightMultiplier = 1.0f)
             ),
             isTtsPlaying = false,
             currentSentenceIndex = null,
             onBack = {},
             onFavoriteToggle = {},
-            onTtsToggle = {}
+            onTtsToggle = {},
+            onRefresh = {}
         )
     }
 }

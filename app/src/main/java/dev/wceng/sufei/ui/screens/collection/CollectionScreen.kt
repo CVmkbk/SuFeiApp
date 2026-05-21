@@ -6,11 +6,13 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -26,12 +28,12 @@ fun CollectionScreen(
     onPoemClick: (String) -> Unit,
     viewModel: CollectionViewModel = hiltViewModel()
 ) {
-    val favoritePoems by viewModel.favoritePoems.collectAsState()
+    val uiState by viewModel.uiState.collectAsState()
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
 
     CollectionContent(
-        favoritePoems = favoritePoems,
+        uiState = uiState,
         snackbarHostState = snackbarHostState,
         onPoemClick = onPoemClick,
         onToggleFavorite = { id, isFav ->
@@ -48,17 +50,19 @@ fun CollectionScreen(
                     }
                 }
             }
-        }
+        },
+        onRefresh = { viewModel.refresh() }
     )
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CollectionContent(
-    favoritePoems: List<UserPoem>,
+    uiState: CollectionUiState,
     snackbarHostState: SnackbarHostState,
     onPoemClick: (String) -> Unit,
-    onToggleFavorite: (String, Boolean) -> Unit
+    onToggleFavorite: (String, Boolean) -> Unit,
+    onRefresh: () -> Unit
 ) {
     Scaffold(
         topBar = {
@@ -71,25 +75,71 @@ fun CollectionContent(
         snackbarHost = { SnackbarHost(snackbarHostState) },
         containerColor = MaterialTheme.colorScheme.background
     ) { innerPadding ->
-        if (favoritePoems.isEmpty()) {
-            EmptyCollectionState(modifier = Modifier.padding(innerPadding))
-        } else {
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(innerPadding),
-                contentPadding = PaddingValues(16.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                items(favoritePoems, key = { it.poem.id }) { userPoem ->
-                    FavoritePoemItem(
-                        modifier = Modifier.animateItem(),
-                        userPoem = userPoem,
-                        onClick = { onPoemClick(userPoem.poem.id) },
-                        onToggleFavorite = { onToggleFavorite(userPoem.poem.id, false) }
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+        ) {
+            when (uiState) {
+                is CollectionUiState.Loading -> {
+                    CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                }
+                is CollectionUiState.Empty -> {
+                    EmptyCollectionState(modifier = Modifier.align(Alignment.Center))
+                }
+                is CollectionUiState.Success -> {
+                    FavoritePoemList(
+                        poems = uiState.poems,
+                        onPoemClick = onPoemClick,
+                        onToggleFavorite = onToggleFavorite
                     )
                 }
+                is CollectionUiState.Error -> {
+                    Column(
+                        modifier = Modifier.align(Alignment.Center),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            text = uiState.message,
+                            color = MaterialTheme.colorScheme.error,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.padding(horizontal = 32.dp)
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
+                        OutlinedButton(onClick = onRefresh) {
+                            Icon(
+                                Icons.Default.Refresh,
+                                contentDescription = null,
+                                modifier = Modifier.size(18.dp)
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text("重试")
+                        }
+                    }
+                }
             }
+        }
+    }
+}
+
+@Composable
+fun FavoritePoemList(
+    poems: List<UserPoem>,
+    onPoemClick: (String) -> Unit,
+    onToggleFavorite: (String, Boolean) -> Unit
+) {
+    LazyColumn(
+        modifier = Modifier.fillMaxSize(),
+        contentPadding = PaddingValues(16.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp)
+    ) {
+        items(poems, key = { it.poem.id }) { userPoem ->
+            FavoritePoemItem(
+                modifier = Modifier.animateItem(),
+                userPoem = userPoem,
+                onClick = { onPoemClick(userPoem.poem.id) },
+                onToggleFavorite = { onToggleFavorite(userPoem.poem.id, false) }
+            )
         }
     }
 }
@@ -176,23 +226,26 @@ fun EmptyCollectionState(modifier: Modifier = Modifier) {
 fun CollectionContentPreview() {
     SuFeiTheme {
         CollectionContent(
-            favoritePoems = listOf(
-                UserPoem(
-                    poem = Poem(
-                        id = "1",
-                        sourceUrl = "",
-                        title = "春晓",
-                        author = "孟浩然",
-                        dynasty = "唐",
-                        content = "春眠不觉晓，处处闻啼鸟。\n夜来风雨声，花落知多少。",
-                        tags = listOf()
-                    ),
-                    isFavorite = true
+            uiState = CollectionUiState.Success(
+                poems = listOf(
+                    UserPoem(
+                        poem = Poem(
+                            id = "1",
+                            sourceUrl = "",
+                            title = "春晓",
+                            author = "孟浩然",
+                            dynasty = "唐",
+                            content = "春眠不觉晓，处处闻啼鸟。\n夜来风雨声，花落知多少。",
+                            tags = listOf()
+                        ),
+                        isFavorite = true
+                    )
                 )
             ),
             snackbarHostState = remember { SnackbarHostState() },
             onPoemClick = {},
-            onToggleFavorite = { _, _ -> }
+            onToggleFavorite = { _, _ -> },
+            onRefresh = {}
         )
     }
 }

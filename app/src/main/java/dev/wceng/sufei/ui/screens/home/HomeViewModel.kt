@@ -3,13 +3,9 @@ package dev.wceng.sufei.ui.screens.home
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dev.wceng.sufei.data.local.room.PoemDao
-import dev.wceng.sufei.data.local.room.entity.toPoem
 import dev.wceng.sufei.data.model.UserPoem
-import dev.wceng.sufei.data.network.TokenManager
 import dev.wceng.sufei.data.network.api.FavoriteApiService
 import dev.wceng.sufei.data.repository.PoemRepository
-import dev.wceng.sufei.data.repository.UserPreferencesRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
@@ -19,14 +15,13 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val poemRepository: PoemRepository,
-    private val userPreferencesRepository: UserPreferencesRepository,
-    private val tokenManager: TokenManager,
-    private val favoriteApiService: FavoriteApiService,
-    private val poemDao: PoemDao
+    private val favoriteApiService: FavoriteApiService
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<HomeUiState>(HomeUiState.Loading)
     val uiState: StateFlow<HomeUiState> = _uiState
+
+    private var isFirstLoad = true
 
     init {
         loadRandomPoem()
@@ -36,54 +31,59 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             _uiState.value = HomeUiState.Loading
             try {
-                val entity = poemDao.getHighQualityRandomPoem().first()
-                    ?: poemDao.getRandomPoem().first()
-                if (entity != null) {
-                    val prefs = userPreferencesRepository.userPreferences.first()
-                    val userPoem = UserPoem(poem = entity.toPoem(), userPreferences = prefs)
-                    _uiState.value = HomeUiState.Success(userPoem)
+                val userPoem = poemRepository.getRandomUserPoem().first()
+                _uiState.value = if (userPoem != null) {
+                    HomeUiState.Success(userPoem)
                 } else {
-                    val userPoem = poemRepository.getRandomUserPoem().first()
-                    _uiState.value = if (userPoem != null) {
-                        HomeUiState.Success(userPoem)
-                    } else {
-                        HomeUiState.Error("未能偶遇诗句")
-                    }
+                    HomeUiState.Error("未能偶遇诗句")
                 }
             } catch (e: Exception) {
-                _uiState.value = HomeUiState.Error(e.message ?: "未知错误")
+                val message = when {
+                    e.message?.contains("Unable to resolve host") == true ||
+                    e.message?.contains("Failed to connect") == true ||
+                    e.message?.contains("Network is unreachable") == true ->
+                        "网络连接失败，请检查网络后重试"
+                    e is java.net.ConnectException ->
+                        "无法连接到服务器，请稍后重试"
+                    e is java.net.SocketTimeoutException ->
+                        "请求超时，请检查网络后重试"
+                    else -> e.message ?: "加载失败"
+                }
+                _uiState.value = HomeUiState.Error(message)
             }
+            isFirstLoad = false
         }
     }
 
     fun toggleFavorite(poemId: String, isFavorite: Boolean) {
+        val current = _uiState.value
+        if (current is HomeUiState.Success) {
+            _uiState.value = current.copy(
+                userPoem = current.userPoem.copy(isFavorite = isFavorite)
+            )
+        }
         viewModelScope.launch {
-            userPreferencesRepository.toggleFavorite(poemId, isFavorite)
-            val current = _uiState.value
-            if (current is HomeUiState.Success) {
-                _uiState.value = current.copy(
-                    userPoem = current.userPoem.copy(isFavorite = isFavorite)
-                )
-            }
-            if (tokenManager.isLoggedIn) {
+            try {
                 if (isFavorite) {
                     favoriteApiService.addFavorite(poemId)
                 } else {
                     favoriteApiService.removeFavorite(poemId)
+                }
+            } catch (_: Exception) {
+                if (current is HomeUiState.Success) {
+                    _uiState.value = current
                 }
             }
         }
     }
 
     fun refresh() {
-        viewModelScope.launch {
-            loadRandomPoem()
-        }
+        loadRandomPoem()
     }
 }
 
 sealed interface HomeUiState {
-    object Loading : HomeUiState
+    data object Loading : HomeUiState
     data class Success(val userPoem: UserPoem) : HomeUiState
     data class Error(val message: String) : HomeUiState
 }
