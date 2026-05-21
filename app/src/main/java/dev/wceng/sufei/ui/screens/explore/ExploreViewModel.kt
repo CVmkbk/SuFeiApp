@@ -6,22 +6,20 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.wceng.sufei.data.model.SearchResult
 import dev.wceng.sufei.data.model.Tag
 import dev.wceng.sufei.data.model.Tune
-import dev.wceng.sufei.data.model.UserPoem
 import dev.wceng.sufei.data.repository.PoemRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.stateIn
 import javax.inject.Inject
 
-@OptIn(FlowPreview::class, ExperimentalCoroutinesApi::class)
+@OptIn(ExperimentalCoroutinesApi::class)
 @HiltViewModel
 class ExploreViewModel @Inject constructor(
     private val poemRepository: PoemRepository
@@ -38,6 +36,11 @@ class ExploreViewModel @Inject constructor(
 
     private val _selectedTune = MutableStateFlow<String?>(null)
     val selectedTune = _selectedTune.asStateFlow()
+
+    private val _isSearching = MutableStateFlow(false)
+    val isSearching: StateFlow<Boolean> = _isSearching.asStateFlow()
+
+    private val _searchTrigger = MutableStateFlow(0L)
 
     private val hotTagNames = listOf(
         "唐诗三百首", "宋词三百首", "古诗三百首", "送别", "思乡",
@@ -83,22 +86,26 @@ class ExploreViewModel @Inject constructor(
             initialValue = hotTuneNames.map { Tune(it) }
         )
 
-    // 混合搜索结果：包含诗人和诗词
     val searchResults: StateFlow<SearchResult> =
-        combine(_searchQuery, _selectedDynasty, _selectedTag, _selectedTune) { query, dynasty, tag, tune ->
-            DataTuple(query, dynasty, tag, tune)
-        }
-            .debounce(300)
-            .flatMapLatest { tuple ->
-                if (tuple.query.isBlank() && tuple.dynasty == null && tuple.tag == null && tuple.tune == null) {
-                    // 默认状态显示 50 首诗词
-                    poemRepository.getAllUserPoems(limit = 50).map { poems ->
-                        SearchResult(poems = poems)
-                    }
-                } else {
-                    // 正式启用词牌过滤
-                    poemRepository.searchAll(tuple.query, tuple.dynasty, tuple.tag, tuple.tune, limit = 50)
+        _searchTrigger.flatMapLatest {
+            _isSearching.value = true
+            val query = _searchQuery.value
+            val dynasty = _selectedDynasty.value
+            val tag = _selectedTag.value
+            val tune = _selectedTune.value
+
+            if (query.isBlank() && dynasty == null && tag == null && tune == null) {
+                poemRepository.getAllUserPoems(limit = 50).map { poems ->
+                    SearchResult(poems = poems)
                 }
+            } else {
+                poemRepository.searchAll(query, dynasty, tag, tune, limit = 50)
+            }
+        }
+            .onEach { _isSearching.value = false }
+            .catch { e ->
+                _isSearching.value = false
+                emit(SearchResult())
             }
             .stateIn(
                 scope = viewModelScope,
@@ -106,21 +113,26 @@ class ExploreViewModel @Inject constructor(
                 initialValue = SearchResult()
             )
 
+    fun onSearchClick() {
+        _searchTrigger.value = _searchTrigger.value + 1
+    }
+
     fun onSearchQueryChange(newQuery: String) {
         _searchQuery.value = newQuery
     }
 
     fun onDynastySelect(dynasty: String?) {
         _selectedDynasty.value = dynasty
+        _searchTrigger.value = _searchTrigger.value + 1
     }
 
     fun onTagSelect(tag: String?) {
         _selectedTag.value = tag
+        _searchTrigger.value = _searchTrigger.value + 1
     }
 
     fun onTuneSelect(tune: String?) {
         _selectedTune.value = tune
+        _searchTrigger.value = _searchTrigger.value + 1
     }
-
-    private data class DataTuple(val query: String, val dynasty: String?, val tag: String?, val tune: String?)
 }

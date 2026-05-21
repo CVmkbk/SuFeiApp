@@ -5,15 +5,18 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -29,12 +32,16 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.SearchBar
 import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.material3.Text
@@ -76,6 +83,7 @@ fun ExploreScreen(
 ) {
     val searchQuery by viewModel.searchQuery.collectAsState()
     val searchResult by viewModel.searchResults.collectAsState()
+    val isSearching by viewModel.isSearching.collectAsState()
     val selectedDynasty by viewModel.selectedDynasty.collectAsState()
     val selectedTag by viewModel.selectedTag.collectAsState()
     val selectedTune by viewModel.selectedTune.collectAsState()
@@ -85,6 +93,8 @@ fun ExploreScreen(
     ExploreContent(
         searchQuery = searchQuery,
         onSearchQueryChange = viewModel::onSearchQueryChange,
+        isSearching = isSearching,
+        onSearchClick = viewModel::onSearchClick,
         selectedDynasty = selectedDynasty,
         onDynastySelect = viewModel::onDynastySelect,
         selectedTag = selectedTag,
@@ -106,6 +116,8 @@ fun ExploreScreen(
 fun ExploreContent(
     searchQuery: String,
     onSearchQueryChange: (String) -> Unit,
+    isSearching: Boolean,
+    onSearchClick: () -> Unit,
     selectedDynasty: String?,
     onDynastySelect: (String?) -> Unit,
     selectedTag: String?,
@@ -158,33 +170,59 @@ fun ExploreContent(
             .background(MaterialTheme.colorScheme.background)
             .nestedScroll(scrollBehavior.nestedScrollConnection)
     ) {
-        // 固定搜索框
-        SearchBar(
-            inputField = {
-                SearchBarDefaults.InputField(
-                    query = searchQuery,
-                    onQueryChange = onSearchQueryChange,
-                    onSearch = { },
-                    expanded = false,
-                    onExpandedChange = { },
-                    placeholder = { Text("搜索诗人、标题、内容") },
-                    leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
-                    trailingIcon = {
-                        if (searchQuery.isNotEmpty()) {
-                            IconButton(onClick = { onSearchQueryChange("") }) {
-                                Icon(Icons.Default.Close, contentDescription = null)
-                            }
-                        }
-                    }
-                )
-            },
-            expanded = false,
-            onExpandedChange = { },
+        // 固定搜索框 + 搜索按钮
+        Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 8.dp),
-            content = { }
-        )
+                .padding(horizontal = 16.dp, vertical = 32.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            OutlinedTextField(
+                value = searchQuery,
+                onValueChange = onSearchQueryChange,
+                placeholder = { Text("诗人、标题、内容") },
+                leadingIcon = { Icon(Icons.Default.Search, null) },
+                trailingIcon = {
+                    if (searchQuery.isNotEmpty()) {
+                        IconButton(onClick = { onSearchQueryChange("") }) {
+                            Icon(Icons.Default.Close, null)
+                        }
+                    }
+                },
+                modifier = Modifier
+                    .weight(1f)
+                    .wrapContentHeight()   // 自动适应内容
+                    .height(IntrinsicSize.Min), // 确保最小高度，但不强制
+                shape = MaterialTheme.shapes.medium,  // 圆角
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = MaterialTheme.colorScheme.primary,
+                    unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+                ),
+                singleLine = true
+            )
+
+            if (isSearching) {
+                CircularProgressIndicator(
+                    modifier = Modifier.padding(start = 8.dp).size(24.dp),
+                    strokeWidth = 2.dp
+                )
+            } else {
+                FilledTonalButton(
+                    onClick = onSearchClick,
+                    enabled = searchQuery.isNotEmpty() || selectedDynasty != null || selectedTag != null || selectedTune != null,
+                    contentPadding = PaddingValues(horizontal = 12.dp, vertical = 4.dp),
+                    modifier = Modifier.padding(start = 8.dp)
+                ) {
+                    Icon(
+                        Icons.Default.Search,
+                        contentDescription = null,
+                        modifier = Modifier.size(18.dp)
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text("搜索")
+                }
+            }
+        }
 
         // 标签栏容器：位移 + 渐变消失
         Box(
@@ -347,6 +385,8 @@ fun ExploreContentPreview() {
         ExploreContent(
             searchQuery = "李白",
             onSearchQueryChange = {},
+            isSearching = false,
+            onSearchClick = {},
             selectedDynasty = "唐代",
             onDynastySelect = {},
             selectedTag = "送别",
