@@ -68,16 +68,24 @@ object PoemService {
 
     fun getRandomPoem(): PoemResponse? {
         DatabaseFactory.getDataSource().connection.use { conn ->
+            val count = conn.prepareStatement("SELECT COUNT(*) FROM poems").use { stmt ->
+                stmt.executeQuery().use { rs ->
+                    if (rs.next()) rs.getLong(1) else 0
+                }
+            }
+            if (count == 0L) return null
+
+            val offset = (Math.random() * count).toLong()
+
             conn.prepareStatement(
                 """
                 SELECT p.*, GROUP_CONCAT(pt.tag_name) as tags
-                FROM poems p
+                FROM (SELECT * FROM poems LIMIT 1 OFFSET ?) p
                 LEFT JOIN poem_tags pt ON p.id = pt.poem_id
                 GROUP BY p.id
-                ORDER BY RAND()
-                LIMIT 1
                 """.trimIndent()
             ).use { stmt ->
+                stmt.setLong(1, offset)
                 stmt.executeQuery().use { rs ->
                     if (rs.next()) return toPoemResponse(rs)
                 }
@@ -88,19 +96,37 @@ object PoemService {
 
     fun getHighQualityRandomPoem(): PoemResponse? {
         DatabaseFactory.getDataSource().connection.use { conn ->
+            val count = conn.prepareStatement(
+                """
+                SELECT COUNT(*) FROM poems
+                WHERE notes IS NOT NULL AND notes != ''
+                  AND translation IS NOT NULL AND translation != ''
+                  AND intro IS NOT NULL AND intro != ''
+                """.trimIndent()
+            ).use { stmt ->
+                stmt.executeQuery().use { rs ->
+                    if (rs.next()) rs.getLong(1) else 0
+                }
+            }
+            if (count == 0L) return null
+
+            val offset = (Math.random() * count).toLong()
+
             conn.prepareStatement(
                 """
                 SELECT p.*, GROUP_CONCAT(pt.tag_name) as tags
-                FROM poems p
+                FROM (
+                    SELECT * FROM poems 
+                    WHERE notes IS NOT NULL AND notes != ''
+                      AND translation IS NOT NULL AND translation != ''
+                      AND intro IS NOT NULL AND intro != ''
+                    LIMIT 1 OFFSET ?
+                ) p
                 LEFT JOIN poem_tags pt ON p.id = pt.poem_id
-                WHERE p.notes IS NOT NULL AND p.notes != ''
-                  AND p.translation IS NOT NULL AND p.translation != ''
-                  AND p.intro IS NOT NULL AND p.intro != ''
                 GROUP BY p.id
-                ORDER BY RAND()
-                LIMIT 1
                 """.trimIndent()
             ).use { stmt ->
+                stmt.setLong(1, offset)
                 stmt.executeQuery().use { rs ->
                     if (rs.next()) return toPoemResponse(rs)
                 }

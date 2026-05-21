@@ -25,7 +25,8 @@ import dev.wceng.sufei.ui.navigation.PoetDetail
 import dev.wceng.sufei.ui.navigation.Profile
 import dev.wceng.sufei.ui.navigation.Square
 import dev.wceng.sufei.ui.screens.auth.LoginScreen
-import dev.wceng.sufei.ui.screens.chat.ChatScreen
+import dev.wceng.sufei.ui.screens.feihualing.FeiHuaLingScreen
+import dev.wceng.sufei.ui.screens.feihualing.FeiHuaLingViewModel
 import dev.wceng.sufei.ui.screens.collection.CollectionScreen
 import dev.wceng.sufei.ui.screens.detail.DetailScreen
 import dev.wceng.sufei.ui.screens.detail.DetailViewModel
@@ -145,7 +146,8 @@ object ScreensModule {
     @Provides
     fun provideChatEntry(navigator: Navigator): EntryProviderInstaller = {
         entry<Chat> {
-            ChatScreen()
+            val viewModel: FeiHuaLingViewModel = hiltViewModel()
+            FeiHuaLingScreen(viewModel = viewModel)
         }
     }
 

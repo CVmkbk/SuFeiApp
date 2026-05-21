@@ -37,9 +37,8 @@ object SearchService {
         val params = mutableListOf<Any?>()
 
         if (!query.isNullOrBlank()) {
-            conditions.add("(p.title LIKE ? OR p.author LIKE ? OR p.content LIKE ?)")
-            val likeQuery = "%$query%"
-            params.add(likeQuery); params.add(likeQuery); params.add(likeQuery)
+            conditions.add("MATCH(p.title, p.author, p.content) AGAINST (? IN BOOLEAN MODE)")
+            params.add(query)
         }
 
         if (!dynasty.isNullOrBlank()) {
