@@ -22,12 +22,21 @@ class AuthRepositoryImpl @Inject constructor(
     override val currentUserId: Long
         get() = tokenManager.userId
 
+    override val currentUserName: String?
+        get() = tokenManager.username
+
+    override val currentNickname: String?
+        get() = tokenManager.nickname
+
+    override val currentAvatarUrl: String?
+        get() = tokenManager.avatarUrl
+
     override suspend fun login(email: String, password: String): Result<AuthResponse> {
         return try {
             val response = authApiService.login(LoginRequest(email, password))
             if (response.code == 200 && response.data != null) {
                 tokenManager.token = response.data.token
-                tokenManager.userId = response.data.user.id
+                tokenManager.saveUserInfo(response.data.user)
                 Result.success(response.data)
             } else {
                 Result.failure(Exception(response.message))
@@ -56,7 +65,7 @@ class AuthRepositoryImpl @Inject constructor(
             val response = authApiService.register(RegisterRequest(username, email, password))
             if (response.code == 201 && response.data != null) {
                 tokenManager.token = response.data.token
-                tokenManager.userId = response.data.user.id
+                tokenManager.saveUserInfo(response.data.user)
                 Result.success(response.data)
             } else {
                 Result.failure(Exception(response.message))

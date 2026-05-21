@@ -36,7 +36,9 @@ data class LoginRequest(
 data class UserResponse(
     val id: Long,
     val username: String,
-    val email: String
+    val email: String,
+    val nickname: String? = null,
+    val avatarUrl: String? = null
 )
 
 @Serializable

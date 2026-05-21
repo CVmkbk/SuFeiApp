@@ -22,6 +22,9 @@ object Chat
 object Profile
 
 @Serializable
+object FavoriteList
+
+@Serializable
 data class Detail(val id: String)
 
 @Serializable

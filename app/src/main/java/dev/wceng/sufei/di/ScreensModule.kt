@@ -17,6 +17,7 @@ import dev.wceng.sufei.ui.navigation.Chat
 import dev.wceng.sufei.ui.navigation.Detail
 import dev.wceng.sufei.ui.navigation.EntryProviderInstaller
 import dev.wceng.sufei.ui.navigation.Explore
+import dev.wceng.sufei.ui.navigation.FavoriteList
 import dev.wceng.sufei.ui.navigation.Home
 import dev.wceng.sufei.ui.navigation.Login
 import dev.wceng.sufei.ui.navigation.Navigator
@@ -25,6 +26,7 @@ import dev.wceng.sufei.ui.navigation.Profile
 import dev.wceng.sufei.ui.navigation.Square
 import dev.wceng.sufei.ui.screens.auth.LoginScreen
 import dev.wceng.sufei.ui.screens.chat.ChatScreen
+import dev.wceng.sufei.ui.screens.collection.CollectionScreen
 import dev.wceng.sufei.ui.screens.detail.DetailScreen
 import dev.wceng.sufei.ui.screens.detail.DetailViewModel
 import dev.wceng.sufei.ui.screens.explore.ExploreScreen
@@ -146,12 +148,22 @@ object ScreensModule {
 
     @IntoSet
     @Provides
+    fun provideFavoriteListEntry(navigator: Navigator): EntryProviderInstaller = {
+        entry<FavoriteList> {
+            CollectionScreen(
+                onPoemClick = { poemId ->
+                    navigator.goTo(Detail(poemId))
+                }
+            )
+        }
+    }
+
+    @IntoSet
+    @Provides
     fun provideProfileEntry(navigator: Navigator): EntryProviderInstaller = {
         entry<Profile> {
             ProfileScreen(
-                onPoemClick = { poemId ->
-                    navigator.goTo(Detail(poemId))
-                },
+                onFavoriteClick = { navigator.goTo(FavoriteList) },
                 onLoginClick = { navigator.goTo(Login) }
             )
         }

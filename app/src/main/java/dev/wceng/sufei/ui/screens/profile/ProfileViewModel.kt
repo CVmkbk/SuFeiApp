@@ -33,6 +33,14 @@ class ProfileViewModel @Inject constructor(
     val isLoggedIn: Boolean
         get() = authRepository.isLoggedIn
 
+    val displayName: String
+        get() = if (isLoggedIn) {
+            authRepository.currentNickname ?: authRepository.currentUserName ?: ""
+        } else ""
+
+    val avatarUrl: String?
+        get() = if (isLoggedIn) authRepository.currentAvatarUrl else null
+
     val userPreferences: StateFlow<UserPreferences> = userPreferencesRepository.userPreferences
         .stateIn(
             scope = viewModelScope,

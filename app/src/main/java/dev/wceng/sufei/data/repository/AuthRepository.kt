@@ -13,6 +13,9 @@ sealed class AuthState {
 interface AuthRepository {
     val isLoggedIn: Boolean
     val currentUserId: Long
+    val currentUserName: String?
+    val currentNickname: String?
+    val currentAvatarUrl: String?
 
     suspend fun login(email: String, password: String): Result<AuthResponse>
     suspend fun register(username: String, email: String, password: String): Result<AuthResponse>
