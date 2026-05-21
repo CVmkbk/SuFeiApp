@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.wceng.sufei.data.model.UserPoem
+import dev.wceng.sufei.data.network.TokenManager
 import dev.wceng.sufei.data.network.api.FavoriteApiService
 import dev.wceng.sufei.data.repository.PoemRepository
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -13,6 +14,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -21,10 +23,14 @@ import javax.inject.Inject
 @HiltViewModel
 class CollectionViewModel @Inject constructor(
     private val poemRepository: PoemRepository,
-    private val favoriteApiService: FavoriteApiService
+    private val favoriteApiService: FavoriteApiService,
+    private val tokenManager: TokenManager
 ) : ViewModel() {
 
     private val refreshTrigger = MutableStateFlow(0L)
+
+    private val _showLoginDialog = MutableStateFlow(false)
+    val showLoginDialog: StateFlow<Boolean> = _showLoginDialog.asStateFlow()
 
     val uiState: StateFlow<CollectionUiState> = refreshTrigger
         .flatMapLatest {
@@ -58,6 +64,10 @@ class CollectionViewModel @Inject constructor(
         )
 
     fun toggleFavorite(poemId: String, isFavorite: Boolean) {
+        if (!tokenManager.isLoggedIn) {
+            _showLoginDialog.value = true
+            return
+        }
         viewModelScope.launch {
             try {
                 if (isFavorite) {
@@ -69,6 +79,10 @@ class CollectionViewModel @Inject constructor(
             } catch (_: Exception) {
             }
         }
+    }
+
+    fun dismissLoginDialog() {
+        _showLoginDialog.value = false
     }
 
     fun refresh() {

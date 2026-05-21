@@ -27,6 +27,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import dev.wceng.sufei.data.model.Poem
 import dev.wceng.sufei.data.model.UserPoem
+import dev.wceng.sufei.ui.components.LoginPromptDialog
 import dev.wceng.sufei.ui.components.MultiColumnVerticalText
 import dev.wceng.sufei.ui.components.VerticalText
 import dev.wceng.sufei.ui.theme.NotoSerifSC
@@ -36,9 +37,11 @@ import dev.wceng.sufei.ui.theme.sealRedLight
 @Composable
 fun HomeScreen(
     onPoemClick: (String) -> Unit,
+    onLoginClick: () -> Unit = {},
     viewModel: HomeViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val showLoginDialog by viewModel.showLoginDialog.collectAsState()
 
     Box(
         modifier = Modifier
@@ -81,6 +84,16 @@ fun HomeScreen(
                 }
             }
         }
+    }
+
+    if (showLoginDialog) {
+        LoginPromptDialog(
+            onDismiss = { viewModel.dismissLoginDialog() },
+            onLogin = {
+                viewModel.dismissLoginDialog()
+                onLoginClick()
+            }
+        )
     }
 }
 

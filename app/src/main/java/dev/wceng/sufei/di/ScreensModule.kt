@@ -54,6 +54,9 @@ object ScreensModule {
             HomeScreen(
                 onPoemClick = { poemId ->
                     navigator.goTo(Detail(poemId))
+                },
+                onLoginClick = {
+                    navigator.goTo(Login)
                 }
             )
         }
@@ -153,6 +156,9 @@ object ScreensModule {
             CollectionScreen(
                 onPoemClick = { poemId ->
                     navigator.goTo(Detail(poemId))
+                },
+                onLoginClick = {
+                    navigator.goTo(Login)
                 }
             )
         }
@@ -190,6 +196,7 @@ object ScreensModule {
             )
             DetailScreen(
                 onBack = { navigator.goBack() },
+                onLoginClick = { navigator.goTo(Login) },
                 viewModel = viewModel
             )
         }

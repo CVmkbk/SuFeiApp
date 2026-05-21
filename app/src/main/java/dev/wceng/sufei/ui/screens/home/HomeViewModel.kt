@@ -4,10 +4,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.wceng.sufei.data.model.UserPoem
+import dev.wceng.sufei.data.network.TokenManager
 import dev.wceng.sufei.data.network.api.FavoriteApiService
 import dev.wceng.sufei.data.repository.PoemRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -15,11 +17,15 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val poemRepository: PoemRepository,
-    private val favoriteApiService: FavoriteApiService
+    private val favoriteApiService: FavoriteApiService,
+    private val tokenManager: TokenManager
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow<HomeUiState>(HomeUiState.Loading)
     val uiState: StateFlow<HomeUiState> = _uiState
+
+    private val _showLoginDialog = MutableStateFlow(false)
+    val showLoginDialog: StateFlow<Boolean> = _showLoginDialog.asStateFlow()
 
     private var isFirstLoad = true
 
@@ -56,6 +62,10 @@ class HomeViewModel @Inject constructor(
     }
 
     fun toggleFavorite(poemId: String, isFavorite: Boolean) {
+        if (!tokenManager.isLoggedIn) {
+            _showLoginDialog.value = true
+            return
+        }
         val current = _uiState.value
         if (current is HomeUiState.Success) {
             _uiState.value = current.copy(
@@ -75,6 +85,10 @@ class HomeViewModel @Inject constructor(
                 }
             }
         }
+    }
+
+    fun dismissLoginDialog() {
+        _showLoginDialog.value = false
     }
 
     fun refresh() {

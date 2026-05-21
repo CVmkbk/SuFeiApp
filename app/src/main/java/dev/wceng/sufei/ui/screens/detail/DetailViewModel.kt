@@ -7,6 +7,7 @@ import dagger.assisted.AssistedFactory
 import dagger.assisted.AssistedInject
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.wceng.sufei.data.model.UserPoem
+import dev.wceng.sufei.data.network.TokenManager
 import dev.wceng.sufei.data.network.api.FavoriteApiService
 import dev.wceng.sufei.data.repository.PoemRepository
 import dev.wceng.sufei.data.tts.TtsManager
@@ -18,6 +19,7 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
@@ -26,6 +28,7 @@ class DetailViewModel @AssistedInject constructor(
     private val poemRepository: PoemRepository,
     private val ttsManager: TtsManager,
     private val favoriteApiService: FavoriteApiService,
+    private val tokenManager: TokenManager,
     @Assisted val detail: Detail
 ) : ViewModel() {
 
@@ -33,6 +36,9 @@ class DetailViewModel @AssistedInject constructor(
     val currentSentenceIndex = ttsManager.currentSentenceIndex
 
     private val refreshTrigger = MutableStateFlow(0L)
+
+    private val _showLoginDialog = MutableStateFlow(false)
+    val showLoginDialog: StateFlow<Boolean> = _showLoginDialog.asStateFlow()
 
     @OptIn(ExperimentalCoroutinesApi::class)
     val uiState: StateFlow<DetailUiState> = refreshTrigger
@@ -67,6 +73,10 @@ class DetailViewModel @AssistedInject constructor(
         )
 
     fun toggleFavorite(isFavorite: Boolean) {
+        if (!tokenManager.isLoggedIn) {
+            _showLoginDialog.value = true
+            return
+        }
         viewModelScope.launch {
             try {
                 if (isFavorite) {
@@ -78,6 +88,10 @@ class DetailViewModel @AssistedInject constructor(
             } catch (_: Exception) {
             }
         }
+    }
+
+    fun dismissLoginDialog() {
+        _showLoginDialog.value = false
     }
 
     fun refresh() {

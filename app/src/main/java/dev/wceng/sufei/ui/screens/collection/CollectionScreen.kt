@@ -17,8 +17,12 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import dev.wceng.sufei.data.model.Poem
 import dev.wceng.sufei.data.model.UserPoem
+import dev.wceng.sufei.ui.components.LoginPromptDialog
 import dev.wceng.sufei.ui.theme.SuFeiTheme
 import dev.wceng.sufei.ui.theme.sealRedLight
 import kotlinx.coroutines.launch
@@ -26,11 +30,24 @@ import kotlinx.coroutines.launch
 @Composable
 fun CollectionScreen(
     onPoemClick: (String) -> Unit,
+    onLoginClick: () -> Unit = {},
     viewModel: CollectionViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val showLoginDialog by viewModel.showLoginDialog.collectAsState()
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
+
+    val lifecycleOwner = LocalLifecycleOwner.current
+    DisposableEffect(lifecycleOwner) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) {
+                viewModel.refresh()
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose { lifecycleOwner.lifecycle.removeObserver(observer) }
+    }
 
     CollectionContent(
         uiState = uiState,
@@ -53,6 +70,16 @@ fun CollectionScreen(
         },
         onRefresh = { viewModel.refresh() }
     )
+
+    if (showLoginDialog) {
+        LoginPromptDialog(
+            onDismiss = { viewModel.dismissLoginDialog() },
+            onLogin = {
+                viewModel.dismissLoginDialog()
+                onLoginClick()
+            }
+        )
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)

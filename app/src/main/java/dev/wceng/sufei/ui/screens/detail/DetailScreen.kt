@@ -56,17 +56,20 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import dev.wceng.sufei.data.model.Poem
 import dev.wceng.sufei.data.model.UserPoem
 import dev.wceng.sufei.ui.components.InterpretationSection
+import dev.wceng.sufei.ui.components.LoginPromptDialog
 import dev.wceng.sufei.ui.theme.SuFeiTheme
 import dev.wceng.sufei.ui.theme.sealRedLight
 
 @Composable
 fun DetailScreen(
     onBack: () -> Unit,
+    onLoginClick: () -> Unit = {},
     viewModel: DetailViewModel
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val isTtsPlaying by viewModel.isTtsPlaying.collectAsState()
     val currentSentenceIndex by viewModel.currentSentenceIndex.collectAsState()
+    val showLoginDialog by viewModel.showLoginDialog.collectAsState()
 
     DisposableEffect(viewModel) {
         onDispose {
@@ -87,6 +90,16 @@ fun DetailScreen(
         },
         onRefresh = { viewModel.refresh() }
     )
+
+    if (showLoginDialog) {
+        LoginPromptDialog(
+            onDismiss = { viewModel.dismissLoginDialog() },
+            onLogin = {
+                viewModel.dismissLoginDialog()
+                onLoginClick()
+            }
+        )
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
