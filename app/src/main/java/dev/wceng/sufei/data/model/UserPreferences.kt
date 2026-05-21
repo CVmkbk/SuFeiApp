@@ -8,6 +8,7 @@ data class UserPreferences(
     val fontSizeMultiplier: Float = 1.0f,
     val lineHeightMultiplier: Float = 1.0f,
     val useDynamicColor: Boolean = true,
+    val useDarkTheme: Boolean = false,
     val fontFamilyName: String = "Serif",
     val dailyPoemId: String = "",
     val lastUpdateMillis: Long = 0L

@@ -31,7 +31,7 @@ fun SettingsScreen(
         isLoggedIn = viewModel.isLoggedIn,
         onFontSizeChange = viewModel::setFontSizeMultiplier,
         onLineHeightChange = viewModel::setLineHeightMultiplier,
-        onDynamicColorToggle = viewModel::setUseDynamicColor,
+        onDarkThemeToggle = viewModel::setUseDarkTheme,
         onFontFamilyChange = viewModel::setFontFamilyName,
         onLoginClick = onLoginClick,
         onLogoutClick = viewModel::logout
@@ -45,7 +45,7 @@ fun SettingsContent(
     isLoggedIn: Boolean = false,
     onFontSizeChange: (Float) -> Unit,
     onLineHeightChange: (Float) -> Unit,
-    onDynamicColorToggle: (Boolean) -> Unit,
+    onDarkThemeToggle: (Boolean) -> Unit,
     onFontFamilyChange: (String) -> Unit,
     onLoginClick: () -> Unit = {},
     onLogoutClick: () -> Unit = {}
@@ -92,9 +92,9 @@ fun SettingsContent(
             SettingsSectionTitle(title = "外观定制", icon = Icons.Default.Palette)
 
             SettingsSwitchItem(
-                label = "Material You 动态色彩",
-                checked = userPreferences.useDynamicColor,
-                onCheckedChange = onDynamicColorToggle
+                label = "夜间模式",
+                checked = userPreferences.useDarkTheme,
+                onCheckedChange = onDarkThemeToggle
             )
             
             // 账号组
@@ -117,14 +117,14 @@ fun SettingsContent(
                 }
             }
 
-            // 更多信息
-            Spacer(modifier = Modifier.height(48.dp))
-            Text(
-                text = "素扉 v${BuildConfig.VERSION_NAME}",
-                style = MaterialTheme.typography.labelSmall,
-                modifier = Modifier.align(Alignment.CenterHorizontally),
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f)
-            )
+//            // 更多信息
+//            Spacer(modifier = Modifier.height(48.dp))
+//            Text(
+//                text = "素扉 v${BuildConfig.VERSION_NAME}",
+//                style = MaterialTheme.typography.labelSmall,
+//                modifier = Modifier.align(Alignment.CenterHorizontally),
+//                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f)
+//            )
         }
     }
 }
@@ -197,7 +197,7 @@ fun SettingsContentPreview() {
             isLoggedIn = false,
             onFontSizeChange = {},
             onLineHeightChange = {},
-            onDynamicColorToggle = {},
+            onDarkThemeToggle = {},
             onFontFamilyChange = {},
             onLoginClick = {},
             onLogoutClick = {}

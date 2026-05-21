@@ -16,10 +16,10 @@ object Home
 object Explore
 
 @Serializable
-object Collection
+object Chat
 
 @Serializable
-object Settings
+object Profile
 
 @Serializable
 data class Detail(val id: String)

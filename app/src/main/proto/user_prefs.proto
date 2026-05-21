@@ -13,4 +13,6 @@ message UserPreferences {
   string daily_poem_id = 6;
   // 上次更新每日诗词的时间戳 (毫秒)
   int64 last_update_millis = 7;
+  // 是否启用深色主题
+  bool use_dark_theme = 8;
 }

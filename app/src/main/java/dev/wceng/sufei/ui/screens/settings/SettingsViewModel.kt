@@ -51,6 +51,12 @@ class SettingsViewModel @Inject constructor(
         }
     }
 
+    fun setUseDarkTheme(use: Boolean) {
+        viewModelScope.launch {
+            userPreferencesRepository.setUseDarkTheme(use)
+        }
+    }
+
     fun setFontFamilyName(name: String) {
         viewModelScope.launch {
             userPreferencesRepository.setFontFamilyName(name)

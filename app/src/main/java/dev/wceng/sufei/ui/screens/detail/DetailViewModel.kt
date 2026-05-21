@@ -38,7 +38,10 @@ class DetailViewModel @AssistedInject constructor(
         userPreferencesRepository.userPreferences
     ) { userPoem, userPrefs ->
         if (userPoem != null) {
-            DetailUiState.Success(userPoem, userPrefs)
+            val syncedUserPoem = userPoem.copy(
+                isFavorite = userPrefs.favoritePoemIds.contains(detail.id)
+            )
+            DetailUiState.Success(syncedUserPoem, userPrefs)
         } else {
             DetailUiState.Error("未找到该诗词")
         }

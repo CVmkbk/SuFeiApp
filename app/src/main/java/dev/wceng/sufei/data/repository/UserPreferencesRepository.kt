@@ -13,6 +13,7 @@ interface UserPreferencesRepository {
     suspend fun setFontSizeMultiplier(multiplier: Float)
     suspend fun setLineHeightMultiplier(multiplier: Float)
     suspend fun setUseDynamicColor(use: Boolean)
+    suspend fun setUseDarkTheme(use: Boolean)
     suspend fun setFontFamilyName(name: String)
     suspend fun updateDailyPoem(poemId: String, timestamp: Long)
 }

@@ -20,6 +20,7 @@ class UserPreferencesDataSource(
                 fontSizeMultiplier = if (proto.fontSizeMultiplier == 0f) 1.0f else proto.fontSizeMultiplier,
                 lineHeightMultiplier = if (proto.lineHeightMultiplier == 0f) 1.0f else proto.lineHeightMultiplier,
                 useDynamicColor = proto.useDynamicColor,
+                useDarkTheme = proto.useDarkTheme,
                 fontFamilyName = proto.fontFamilyName.ifEmpty { "Serif" },
                 dailyPoemId = proto.dailyPoemId,
                 lastUpdateMillis = proto.lastUpdateMillis
@@ -54,6 +55,10 @@ class UserPreferencesDataSource(
 
     suspend fun setUseDynamicColor(use: Boolean) {
         updateData { it.toBuilder().setUseDynamicColor(use).build() }
+    }
+
+    suspend fun setUseDarkTheme(use: Boolean) {
+        updateData { it.toBuilder().setUseDarkTheme(use).build() }
     }
 
     suspend fun setFontFamilyName(name: String) {

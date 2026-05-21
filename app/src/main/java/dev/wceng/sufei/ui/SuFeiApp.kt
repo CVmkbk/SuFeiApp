@@ -16,13 +16,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.ui.NavDisplay
-import dev.wceng.sufei.ui.navigation.Collection
+import dev.wceng.sufei.ui.navigation.Chat
 import dev.wceng.sufei.ui.navigation.EntryProviderInstaller
 import dev.wceng.sufei.ui.navigation.Explore
 import dev.wceng.sufei.ui.navigation.Home
 import dev.wceng.sufei.ui.navigation.MainTab
 import dev.wceng.sufei.ui.navigation.Navigator
-import dev.wceng.sufei.ui.navigation.Settings
+import dev.wceng.sufei.ui.navigation.Profile
 import dev.wceng.sufei.ui.navigation.toRoute
 
 @Composable
@@ -36,8 +36,8 @@ fun SuFeiApp(
         when (currentDestination) {
             is Home -> MainTab.Home
             is Explore -> MainTab.Explore
-            is Collection -> MainTab.Collection
-            is Settings -> MainTab.Settings
+            is Chat -> MainTab.Chat
+            is Profile -> MainTab.Profile
             else -> null
         }
     }

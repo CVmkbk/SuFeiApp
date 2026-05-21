@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -51,7 +52,8 @@ fun HomeScreen(
                 HomeContent(
                     userPoem = state.userPoem,
                     onPoemClick = { onPoemClick(state.userPoem.poem.id) },
-                    onFavoriteToggle = { viewModel.toggleFavorite(state.userPoem.poem.id, it) }
+                    onFavoriteToggle = { viewModel.toggleFavorite(state.userPoem.poem.id, it) },
+                    onRefresh = { viewModel.refresh() }
                 )
             }
             is HomeUiState.Error -> {
@@ -114,7 +116,8 @@ private fun extractHighlight(poem: Poem): List<String> {
 private fun HomeContent(
     userPoem: UserPoem,
     onPoemClick: () -> Unit,
-    onFavoriteToggle: (Boolean) -> Unit
+    onFavoriteToggle: (Boolean) -> Unit,
+    onRefresh: () -> Unit
 ) {
     val poem = userPoem.poem
     val displayLines = remember(poem.content) { extractHighlight(poem) }
@@ -123,7 +126,7 @@ private fun HomeContent(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .padding(bottom = 80.dp)
+            .padding(bottom = 12.dp)
     ) {
         Row(
             modifier = Modifier
@@ -202,10 +205,18 @@ private fun HomeContent(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .fillMaxWidth()
-                .padding(bottom = 32.dp),
+                .padding(bottom = 12.dp),
             horizontalArrangement = Arrangement.SpaceEvenly,
             verticalAlignment = Alignment.CenterVertically
         ) {
+            IconButton(onClick = onRefresh) {
+                Icon(
+                    imageVector = Icons.Default.Refresh,
+                    contentDescription = "换一首",
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f)
+                )
+            }
+
             // 分享实现
             IconButton(onClick = {
                 val shareText = "《${poem.title}》· ${poem.author} [${poem.dynasty}]\n\n" +
@@ -257,7 +268,8 @@ fun HomeScreenPreview() {
                     isFavorite = false
                 ),
                 onPoemClick = {},
-                onFavoriteToggle = {}
+                onFavoriteToggle = {},
+                onRefresh = {}
             )
         }
     }

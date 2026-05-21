@@ -271,7 +271,10 @@ fun SuFeiTheme(
   MaterialTheme(
     colorScheme = colorScheme,
     typography = Typography,
-    content = content
-  )
+  ) {
+    PaperBackground(isDark = darkTheme) {
+      content()
+    }
+  }
 }
 

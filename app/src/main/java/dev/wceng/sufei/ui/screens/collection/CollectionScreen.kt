@@ -64,7 +64,7 @@ fun CollectionContent(
         topBar = {
             CenterAlignedTopAppBar(
                 title = { 
-                    Text("枕边", fontWeight = FontWeight.Bold) 
+                    Text("收藏", fontWeight = FontWeight.Bold)
                 }
             )
         },

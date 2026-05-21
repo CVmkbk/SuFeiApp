@@ -13,7 +13,7 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ActivityRetainedComponent
 import dagger.multibindings.IntoSet
 import androidx.navigation3.ui.NavDisplay
-import dev.wceng.sufei.ui.navigation.Collection
+import dev.wceng.sufei.ui.navigation.Chat
 import dev.wceng.sufei.ui.navigation.Detail
 import dev.wceng.sufei.ui.navigation.EntryProviderInstaller
 import dev.wceng.sufei.ui.navigation.Explore
@@ -21,10 +21,10 @@ import dev.wceng.sufei.ui.navigation.Home
 import dev.wceng.sufei.ui.navigation.Login
 import dev.wceng.sufei.ui.navigation.Navigator
 import dev.wceng.sufei.ui.navigation.PoetDetail
-import dev.wceng.sufei.ui.navigation.Settings
+import dev.wceng.sufei.ui.navigation.Profile
 import dev.wceng.sufei.ui.navigation.Square
 import dev.wceng.sufei.ui.screens.auth.LoginScreen
-import dev.wceng.sufei.ui.screens.collection.CollectionScreen
+import dev.wceng.sufei.ui.screens.chat.ChatScreen
 import dev.wceng.sufei.ui.screens.detail.DetailScreen
 import dev.wceng.sufei.ui.screens.detail.DetailViewModel
 import dev.wceng.sufei.ui.screens.explore.ExploreScreen
@@ -35,7 +35,7 @@ import dev.wceng.sufei.ui.screens.explore.SquareViewModel
 import dev.wceng.sufei.ui.screens.home.HomeScreen
 import dev.wceng.sufei.ui.screens.poet.PoetDetailScreen
 import dev.wceng.sufei.ui.screens.poet.PoetDetailViewModel
-import dev.wceng.sufei.ui.screens.settings.SettingsScreen
+import dev.wceng.sufei.ui.screens.profile.ProfileScreen
 
 /**
  * 屏幕路由注册模块
@@ -138,12 +138,21 @@ object ScreensModule {
 
     @IntoSet
     @Provides
-    fun provideCollectionEntry(navigator: Navigator): EntryProviderInstaller = {
-        entry<Collection> {
-            CollectionScreen(
+    fun provideChatEntry(navigator: Navigator): EntryProviderInstaller = {
+        entry<Chat> {
+            ChatScreen()
+        }
+    }
+
+    @IntoSet
+    @Provides
+    fun provideProfileEntry(navigator: Navigator): EntryProviderInstaller = {
+        entry<Profile> {
+            ProfileScreen(
                 onPoemClick = { poemId ->
                     navigator.goTo(Detail(poemId))
-                }
+                },
+                onLoginClick = { navigator.goTo(Login) }
             )
         }
     }
@@ -170,16 +179,6 @@ object ScreensModule {
             DetailScreen(
                 onBack = { navigator.goBack() },
                 viewModel = viewModel
-            )
-        }
-    }
-
-    @IntoSet
-    @Provides
-    fun provideSettingsEntry(navigator: Navigator): EntryProviderInstaller = {
-        entry<Settings> {
-            SettingsScreen(
-                onLoginClick = { navigator.goTo(Login) }
             )
         }
     }

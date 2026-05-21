@@ -29,6 +29,10 @@ class UserPreferencesRepositoryImpl @Inject constructor(
         dataSource.setUseDynamicColor(use)
     }
 
+    override suspend fun setUseDarkTheme(use: Boolean) {
+        dataSource.setUseDarkTheme(use)
+    }
+
     override suspend fun setFontFamilyName(name: String) {
         dataSource.setFontFamilyName(name)
     }
