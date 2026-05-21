@@ -94,6 +94,19 @@ class HomeViewModel @Inject constructor(
     fun refresh() {
         loadRandomPoem()
     }
+
+    fun refreshCurrentPoem() {
+        val current = _uiState.value
+        if (current !is HomeUiState.Success) return
+        viewModelScope.launch {
+            try {
+                val userPoem = poemRepository.getUserPoemById(current.userPoem.poem.id).first()
+                if (userPoem != null) {
+                    _uiState.value = HomeUiState.Success(userPoem)
+                }
+            } catch (_: Exception) { }
+        }
+    }
 }
 
 sealed interface HomeUiState {
