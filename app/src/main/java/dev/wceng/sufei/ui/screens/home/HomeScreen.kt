@@ -15,7 +15,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
@@ -29,16 +28,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
@@ -47,8 +43,10 @@ import dev.wceng.sufei.data.model.UserPoem
 import dev.wceng.sufei.ui.components.LoginPromptDialog
 import dev.wceng.sufei.ui.components.MultiColumnVerticalText
 import dev.wceng.sufei.ui.components.VerticalText
-import dev.wceng.sufei.ui.theme.NotoSerifSC
+import dev.wceng.sufei.ui.theme.PoemTitleStyle
+import dev.wceng.sufei.ui.theme.SealedAuthorStyle
 import dev.wceng.sufei.ui.theme.SuFeiTheme
+import dev.wceng.sufei.ui.theme.VerseLineStyle
 
 
 @Composable
@@ -227,11 +225,8 @@ private fun HomeContent(
                         spacing = 3.dp,
                         columnSpacing = 12.dp,
                         maxCharsPerColumn = 8,
-                        style = MaterialTheme.typography.displaySmall.copy(
-                            fontFamily = NotoSerifSC,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onBackground,
-                            fontSize = 24.sp
+                        style = PoemTitleStyle.copy(
+                            color = MaterialTheme.colorScheme.onBackground
                         )
                     )
 
@@ -246,11 +241,8 @@ private fun HomeContent(
                         VerticalText(
                             text = poem.author,
                             spacing = 2.dp,
-                            style = MaterialTheme.typography.bodyMedium.copy(
-                                fontFamily = NotoSerifSC,
-                                color = MaterialTheme.colorScheme.primary,
-                                fontWeight = FontWeight.Medium,
-                                fontSize = 12.sp
+                            style = SealedAuthorStyle.copy(
+                                color = MaterialTheme.colorScheme.primary
                             )
                         )
                     }
@@ -265,13 +257,8 @@ private fun HomeContent(
                         VerticalText(
                             text = line,
                             spacing = 6.dp,
-                            style = MaterialTheme.typography.headlineMedium.copy(
-                                fontFamily = NotoSerifSC,
-                                fontWeight = FontWeight.Normal,
-                                lineHeight = 36.sp,
-                                letterSpacing = 1.5.sp,
-                                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.8f),
-                                fontSize = 22.sp
+                            style = VerseLineStyle.copy(
+                                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.8f)
                             )
                         )
                         if (index < displayLines.size - 1) {

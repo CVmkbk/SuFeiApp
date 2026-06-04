@@ -7,10 +7,13 @@ import androidx.compose.ui.unit.sp
 
 /**
  * 素扉 (SuFei) 全局字体配置
- * 统一使用内置的 NotoSerifSC (思源宋体)，确保在所有 Android 版本及厂商设备上显示效果一致。
+ *
+ * 排版原则：
+ * - 文学性内容（标题、正文、诗词）→ 思源宋体 (NotoSerifSC)，营造古籍阅读质感
+ * - UI 控件（标签、按钮、芯片）→ 系统无衬线 (SystemUISans)，确保功能界面清晰可辨
  */
 val Typography = Typography(
-    // 用于启动页 Logo
+    // ========== 展示级 (Display) — 思源宋体 ==========
     displayLarge = TextStyle(
         fontFamily = NotoSerifSC,
         fontWeight = FontWeight.Light,
@@ -18,23 +21,36 @@ val Typography = Typography(
         lineHeight = 64.sp,
         letterSpacing = (-0.25).sp
     ),
-    // 用于详情页诗词正文
+    displayMedium = TextStyle(
+        fontFamily = NotoSerifSC,
+        fontWeight = FontWeight.Normal,
+        fontSize = 45.sp,
+        lineHeight = 52.sp,
+        letterSpacing = 0.sp
+    ),
     displaySmall = TextStyle(
         fontFamily = NotoSerifSC,
         fontWeight = FontWeight.Normal,
         fontSize = 20.sp,
         lineHeight = 36.sp,
+        letterSpacing = 1.sp
+    ),
+
+    // ========== 标题级 (Headline) — 思源宋体 ==========
+    headlineLarge = TextStyle(
+        fontFamily = NotoSerifSC,
+        fontWeight = FontWeight.Bold,
+        fontSize = 32.sp,
+        lineHeight = 40.sp,
         letterSpacing = 0.sp
     ),
-    // 用于诗词标题
     headlineMedium = TextStyle(
         fontFamily = NotoSerifSC,
         fontWeight = FontWeight.Bold,
         fontSize = 18.sp,
-        lineHeight = 26.sp,
+        lineHeight = 28.sp,
         letterSpacing = 0.sp
     ),
-    // 用于次级标题或占位屏大文字
     headlineSmall = TextStyle(
         fontFamily = NotoSerifSC,
         fontWeight = FontWeight.Medium,
@@ -42,7 +58,15 @@ val Typography = Typography(
         lineHeight = 28.sp,
         letterSpacing = 0.sp
     ),
-    // 用于小标题（如：注释、赏析）
+
+    // ========== 标题级 (Title) — 思源宋体 ==========
+    titleLarge = TextStyle(
+        fontFamily = NotoSerifSC,
+        fontWeight = FontWeight.Bold,
+        fontSize = 22.sp,
+        lineHeight = 28.sp,
+        letterSpacing = 0.sp
+    ),
     titleMedium = TextStyle(
         fontFamily = NotoSerifSC,
         fontWeight = FontWeight.Bold,
@@ -50,12 +74,20 @@ val Typography = Typography(
         lineHeight = 24.sp,
         letterSpacing = 0.1.sp
     ),
-    // 用于标准正文、作者信息
+    titleSmall = TextStyle(
+        fontFamily = NotoSerifSC,
+        fontWeight = FontWeight.Medium,
+        fontSize = 14.sp,
+        lineHeight = 20.sp,
+        letterSpacing = 0.1.sp
+    ),
+
+    // ========== 正文级 (Body) — 思源宋体 ==========
     bodyLarge = TextStyle(
         fontFamily = NotoSerifSC,
         fontWeight = FontWeight.Normal,
         fontSize = 14.sp,
-        lineHeight = 22.sp,
+        lineHeight = 24.sp,
         letterSpacing = 0.5.sp
     ),
     bodyMedium = TextStyle(
@@ -65,42 +97,6 @@ val Typography = Typography(
         lineHeight = 20.sp,
         letterSpacing = 0.25.sp
     ),
-    labelSmall = TextStyle(
-        fontFamily = NotoSerifSC,
-        fontWeight = FontWeight.Medium,
-        fontSize = 11.sp,
-        lineHeight = 16.sp,
-        letterSpacing = 0.5.sp
-    ),
-    // === 以下为补全的 Material 3 标准样式 ===
-    displayMedium = TextStyle(
-        fontFamily = NotoSerifSC,
-        fontWeight = FontWeight.Normal,
-        fontSize = 45.sp,
-        lineHeight = 52.sp,
-        letterSpacing = 0.sp
-    ),
-    headlineLarge = TextStyle(
-        fontFamily = NotoSerifSC,
-        fontWeight = FontWeight.Bold,
-        fontSize = 32.sp,
-        lineHeight = 40.sp,
-        letterSpacing = 0.sp
-    ),
-    titleLarge = TextStyle(
-        fontFamily = NotoSerifSC,
-        fontWeight = FontWeight.Bold,
-        fontSize = 22.sp,
-        lineHeight = 28.sp,
-        letterSpacing = 0.sp
-    ),
-    titleSmall = TextStyle(
-        fontFamily = NotoSerifSC,
-        fontWeight = FontWeight.Medium,
-        fontSize = 14.sp,
-        lineHeight = 20.sp,
-        letterSpacing = 0.1.sp
-    ),
     bodySmall = TextStyle(
         fontFamily = NotoSerifSC,
         fontWeight = FontWeight.Normal,
@@ -108,23 +104,33 @@ val Typography = Typography(
         lineHeight = 16.sp,
         letterSpacing = 0.4.sp
     ),
+
+    // ========== 标签级 (Label) — 系统 UI 无衬线 ==========
+    labelLarge = TextStyle(
+        fontFamily = SystemUISans,
+        fontWeight = FontWeight.Medium,
+        fontSize = 14.sp,
+        lineHeight = 20.sp,
+        letterSpacing = 0.1.sp
+    ),
     labelMedium = TextStyle(
-        fontFamily = NotoSerifSC,
+        fontFamily = SystemUISans,
         fontWeight = FontWeight.Medium,
         fontSize = 12.sp,
         lineHeight = 16.sp,
         letterSpacing = 0.5.sp
     ),
-    labelLarge = TextStyle(
-        fontFamily = NotoSerifSC,
+    labelSmall = TextStyle(
+        fontFamily = SystemUISans,
         fontWeight = FontWeight.Medium,
-        fontSize = 14.sp,
-        lineHeight = 20.sp,
-        letterSpacing = 0.1.sp
+        fontSize = 11.sp,
+        lineHeight = 16.sp,
+        letterSpacing = 0.5.sp
     )
 )
 
 // ==================== 诗词专用样式 ====================
+/** 诗词正文竖排 */
 val PoemBodyStyle = TextStyle(
     fontFamily = NotoSerifSC,
     fontWeight = FontWeight.Normal,
@@ -133,6 +139,7 @@ val PoemBodyStyle = TextStyle(
     letterSpacing = 2.sp
 )
 
+/** 诗词标题 */
 val PoemTitleStyle = TextStyle(
     fontFamily = NotoSerifSC,
     fontWeight = FontWeight.Bold,
@@ -141,7 +148,8 @@ val PoemTitleStyle = TextStyle(
     letterSpacing = 2.sp
 )
 
-val SealTextStyle = TextStyle(
+/** 作者名 - 妃红印鉴风格 */
+val SealedAuthorStyle = TextStyle(
     fontFamily = NotoSerifSC,
     fontWeight = FontWeight.Medium,
     fontSize = 12.sp,
@@ -149,10 +157,20 @@ val SealTextStyle = TextStyle(
     letterSpacing = 0.sp
 )
 
+/** 注解、译文等辅助性文本 */
 val AnnotationTextStyle = TextStyle(
     fontFamily = NotoSerifSC,
     fontWeight = FontWeight.Normal,
     fontSize = 14.sp,
     lineHeight = 24.sp,
     letterSpacing = 0.5.sp
+)
+
+/** 诗句竖向展示（行内间距更大） */
+val VerseLineStyle = TextStyle(
+    fontFamily = NotoSerifSC,
+    fontWeight = FontWeight.Normal,
+    fontSize = 22.sp,
+    lineHeight = 36.sp,
+    letterSpacing = 1.5.sp
 )
