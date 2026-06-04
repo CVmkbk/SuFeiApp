@@ -89,7 +89,7 @@ class FeiHuaLingViewModel @Inject constructor(
                 val request = DeepSeekChatRequest(
                     messages = conversationHistory.toList(),
                     temperature = 0.3,
-                    maxTokens = 512
+                    maxTokens = 1024
                 )
                 val response = deepSeekApiService.chatCompletions(request)
                 val aiContent = response.choices.firstOrNull()?.message?.content ?: ""

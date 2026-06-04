@@ -1,5 +1,6 @@
 package dev.wceng.sufei.ui.screens.explore
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -53,10 +54,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.layout
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -68,6 +72,7 @@ import dev.wceng.sufei.data.model.SearchResult
 import dev.wceng.sufei.data.model.Tag
 import dev.wceng.sufei.data.model.Tune
 import dev.wceng.sufei.data.model.UserPoem
+import dev.wceng.sufei.R
 import dev.wceng.sufei.ui.components.PoemPreviewCard
 import dev.wceng.sufei.ui.components.PoetPreviewCard
 import dev.wceng.sufei.ui.theme.SuFeiTheme
@@ -164,12 +169,21 @@ fun ExploreContent(
         }
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(MaterialTheme.colorScheme.background)
-            .nestedScroll(scrollBehavior.nestedScrollConnection)
-    ) {
+    Box(modifier = Modifier.fillMaxSize()) {
+        Image(
+            painter = painterResource(id = R.drawable.bg_explore),
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
+            modifier = Modifier
+                .fillMaxSize()
+                .alpha(0.15f)
+        )
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.Transparent)
+                .nestedScroll(scrollBehavior.nestedScrollConnection)
+        ) {
         // 固定搜索框 + 搜索按钮
         Row(
             modifier = Modifier
@@ -309,6 +323,7 @@ fun ExploreContent(
             }
         }
     }
+    } // end Box
 }
 
 @Composable

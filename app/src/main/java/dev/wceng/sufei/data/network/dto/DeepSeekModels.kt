@@ -5,9 +5,9 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class DeepSeekChatRequest(
-    val model: String = "deepseek-chat",
+    val model: String = "deepseek-v4-flash",
     val messages: List<Message>,
-    val temperature: Double = 0.7,
+    val temperature: Double = 0.3,
     @SerialName("max_tokens")
     val maxTokens: Int = 1024,
     val stream: Boolean = false
