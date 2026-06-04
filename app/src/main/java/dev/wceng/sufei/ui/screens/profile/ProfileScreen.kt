@@ -33,11 +33,9 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Slider
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
@@ -52,14 +50,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
+import dev.wceng.sufei.ui.components.PreferenceSectionTitle
+import dev.wceng.sufei.ui.components.PreferenceSlider
+import dev.wceng.sufei.ui.components.PreferenceSwitch
 import dev.wceng.sufei.ui.theme.SuFeiTheme
-
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -133,7 +132,7 @@ fun ProfileScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            ProfileSectionTitle(title = "收藏", icon = Icons.Default.Favorite)
+            PreferenceSectionTitle(title = "收藏", icon = Icons.Default.Favorite)
 
             val enabled = isLoggedIn
             val sectionModifier = if (!enabled) Modifier.alpha(0.4f) else Modifier
@@ -200,25 +199,27 @@ fun ProfileScreen(
                 }
             }
 
-            ProfileSectionTitle(title = "阅读偏好", icon = Icons.Default.TextFormat)
+            Spacer(modifier = Modifier.height(24.dp))
+            PreferenceSectionTitle(title = "阅读偏好", icon = Icons.Default.TextFormat)
 
-            ProfileSliderItem(
+            PreferenceSlider(
                 label = "字体大小",
                 value = userPreferences.fontSizeMultiplier,
                 onValueChange = viewModel::setFontSizeMultiplier,
                 valueRange = 0.8f..1.5f
             )
 
-            ProfileSliderItem(
+            PreferenceSlider(
                 label = "行间距",
                 value = userPreferences.lineHeightMultiplier,
                 onValueChange = viewModel::setLineHeightMultiplier,
                 valueRange = 1.0f..2.5f
             )
 
-            ProfileSectionTitle(title = "外观定制", icon = Icons.Default.Palette)
+            Spacer(modifier = Modifier.height(24.dp))
+            PreferenceSectionTitle(title = "外观定制", icon = Icons.Default.Palette)
 
-            ProfileSwitchItem(
+            PreferenceSwitch(
                 label = "夜间模式",
                 checked = userPreferences.useDarkTheme,
                 onCheckedChange = viewModel::setUseDarkTheme
@@ -310,94 +311,6 @@ private fun ProfileHeaderSection(
                     Text("登录")
                 }
             }
-        }
-    }
-}
-
-@Composable
-private fun ProfileSectionTitle(title: String, icon: ImageVector) {
-    Spacer(modifier = Modifier.height(24.dp))
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.padding(bottom = 16.dp)
-    ) {
-        Icon(
-            imageVector = icon,
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.size(20.dp)
-        )
-        Spacer(modifier = Modifier.width(8.dp))
-        Text(
-            text = title,
-            style = MaterialTheme.typography.titleMedium.copy(
-                fontWeight = FontWeight.Bold
-            )
-        )
-    }
-}
-
-@Composable
-private fun ProfileSliderItem(
-    label: String,
-    value: Float,
-    onValueChange: (Float) -> Unit,
-    valueRange: ClosedFloatingPointRange<Float>
-) {
-    Column(modifier = Modifier.fillMaxWidth()) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = label,
-                style = MaterialTheme.typography.bodyLarge
-            )
-            Text(
-                text = "%.1f".format(value),
-                style = MaterialTheme.typography.bodySmall.copy(
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
-                )
-            )
-        }
-        Slider(
-            value = value,
-            onValueChange = onValueChange,
-            valueRange = valueRange,
-            modifier = Modifier.fillMaxWidth()
-        )
-    }
-}
-
-@Composable
-private fun ProfileSwitchItem(
-    label: String,
-    checked: Boolean,
-    onCheckedChange: (Boolean) -> Unit
-) {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
-        ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 8.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = label,
-                style = MaterialTheme.typography.bodyLarge
-            )
-            Switch(
-                checked = checked,
-                onCheckedChange = onCheckedChange
-            )
         }
     }
 }

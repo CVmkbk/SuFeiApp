@@ -17,6 +17,9 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import dev.wceng.sufei.BuildConfig
 import dev.wceng.sufei.data.model.UserPreferences
+import dev.wceng.sufei.ui.components.PreferenceSectionTitle
+import dev.wceng.sufei.ui.components.PreferenceSlider
+import dev.wceng.sufei.ui.components.PreferenceSwitch
 import dev.wceng.sufei.ui.theme.SuFeiTheme
 
 @Composable
@@ -71,16 +74,16 @@ fun SettingsContent(
                 .padding(16.dp)
         ) {
             // 阅读偏好组
-            SettingsSectionTitle(title = "阅读偏好", icon = Icons.Default.TextFormat)
+            PreferenceSectionTitle(title = "阅读偏好", icon = Icons.Default.TextFormat)
             
-            SettingsSliderItem(
+            PreferenceSlider(
                 label = "字体大小",
                 value = userPreferences.fontSizeMultiplier,
                 onValueChange = onFontSizeChange,
                 valueRange = 0.8f..1.5f
             )
 
-            SettingsSliderItem(
+            PreferenceSlider(
                 label = "行间距",
                 value = userPreferences.lineHeightMultiplier,
                 onValueChange = onLineHeightChange,
@@ -89,9 +92,9 @@ fun SettingsContent(
 
             // 外观组
             Spacer(modifier = Modifier.height(24.dp))
-            SettingsSectionTitle(title = "外观定制", icon = Icons.Default.Palette)
+            PreferenceSectionTitle(title = "外观定制", icon = Icons.Default.Palette)
 
-            SettingsSwitchItem(
+            PreferenceSwitch(
                 label = "夜间模式",
                 checked = userPreferences.useDarkTheme,
                 onCheckedChange = onDarkThemeToggle
@@ -99,7 +102,7 @@ fun SettingsContent(
             
             // 账号组
             Spacer(modifier = Modifier.height(24.dp))
-            SettingsSectionTitle(title = "账号", icon = Icons.Default.AccountCircle)
+            PreferenceSectionTitle(title = "账号", icon = Icons.Default.AccountCircle)
 
             if (isLoggedIn) {
                 OutlinedButton(
@@ -116,75 +119,7 @@ fun SettingsContent(
                     Text("登录 / 注册")
                 }
             }
-
-//            // 更多信息
-//            Spacer(modifier = Modifier.height(48.dp))
-//            Text(
-//                text = "素扉 v${BuildConfig.VERSION_NAME}",
-//                style = MaterialTheme.typography.labelSmall,
-//                modifier = Modifier.align(Alignment.CenterHorizontally),
-//                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f)
-//            )
         }
-    }
-}
-
-@Composable
-private fun SettingsSectionTitle(title: String, icon: androidx.compose.ui.graphics.vector.ImageVector) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.padding(bottom = 16.dp)
-    ) {
-        Icon(
-            imageVector = icon,
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.primary,
-            modifier = Modifier.size(20.dp)
-        )
-        Spacer(modifier = Modifier.width(8.dp))
-        Text(
-            text = title,
-            style = MaterialTheme.typography.titleMedium.copy(
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.primary
-            )
-        )
-    }
-}
-
-@Composable
-private fun SettingsSliderItem(
-    label: String,
-    value: Float,
-    onValueChange: (Float) -> Unit,
-    valueRange: ClosedFloatingPointRange<Float>
-) {
-    Column(modifier = Modifier.padding(vertical = 8.dp)) {
-        Text(text = label, style = MaterialTheme.typography.bodyMedium)
-        Slider(
-            value = value,
-            onValueChange = onValueChange,
-            valueRange = valueRange,
-            modifier = Modifier.padding(top = 4.dp)
-        )
-    }
-}
-
-@Composable
-private fun SettingsSwitchItem(
-    label: String,
-    checked: Boolean,
-    onCheckedChange: (Boolean) -> Unit
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 12.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween
-    ) {
-        Text(text = label, style = MaterialTheme.typography.bodyMedium)
-        Switch(checked = checked, onCheckedChange = onCheckedChange)
     }
 }
 
