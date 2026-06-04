@@ -48,6 +48,8 @@ import dev.wceng.sufei.ui.theme.PoemTitleStyle
 import dev.wceng.sufei.ui.theme.SealedAuthorStyle
 import dev.wceng.sufei.ui.theme.SuFeiTheme
 import dev.wceng.sufei.ui.theme.VerseLineStyle
+import dev.wceng.sufei.ui.theme.LocalTextScale
+import dev.wceng.sufei.ui.theme.scaledBy
 
 
 @Composable
@@ -179,6 +181,7 @@ private fun HomeContent(
     val poem = userPoem.poem
     val displayLines = remember(poem.content) { extractHighlight(poem) }
     val context = LocalContext.current
+    val textScale = LocalTextScale.current
 
     // 收藏按钮弹跳动画
     val favoriteScale by animateFloatAsState(
@@ -228,7 +231,7 @@ private fun HomeContent(
                         maxCharsPerColumn = 8,
                         style = PoemTitleStyle.copy(
                             color = MaterialTheme.colorScheme.onBackground
-                        )
+                        ).scaledBy(textScale)
                     )
 
                     Spacer(modifier = Modifier.height(20.dp))
@@ -244,7 +247,7 @@ private fun HomeContent(
                             spacing = 2.dp,
                             style = SealedAuthorStyle.copy(
                                 color = MaterialTheme.colorScheme.primary
-                            )
+                            ).scaledBy(textScale)
                         )
                     }
                 }
@@ -260,7 +263,7 @@ private fun HomeContent(
                             spacing = 6.dp,
                             style = VerseLineStyle.copy(
                                 color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.8f)
-                            )
+                            ).scaledBy(textScale)
                         )
                         if (index < displayLines.size - 1) {
                             Spacer(modifier = Modifier.width(24.dp))

@@ -13,8 +13,11 @@ import dev.wceng.sufei.data.repository.UserPreferencesRepository
 import dev.wceng.sufei.ui.SuFeiApp
 import dev.wceng.sufei.ui.screens.splash.SplashScreen
 import dev.wceng.sufei.ui.screens.splash.SplashViewModel
+import dev.wceng.sufei.ui.theme.LocalTextScale
 import dev.wceng.sufei.ui.theme.SuFeiTheme
+import dev.wceng.sufei.ui.theme.TextScale
 import dagger.hilt.android.AndroidEntryPoint
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import dev.wceng.sufei.ui.navigation.EntryProviderInstaller
 import dev.wceng.sufei.ui.navigation.Navigator
@@ -44,21 +47,28 @@ class MainActivity : ComponentActivity() {
             val userPreferences by userPreferencesRepository.userPreferences
                 .collectAsState(initial = UserPreferences())
 
-            SuFeiTheme(
-                darkTheme = userPreferences.useDarkTheme,
-                dynamicColor = userPreferences.useDynamicColor
-            ) {
-                val splashViewModel: SplashViewModel = hiltViewModel()
-                val importState by splashViewModel.importState.collectAsState()
+            val textScale = TextScale(
+                fontScale = userPreferences.fontSizeMultiplier,
+                lineHeightScale = userPreferences.lineHeightMultiplier
+            )
 
-                if (importState is ImportState.Success) {
-                    // 使用注入的单例 navigator，确保全站状态同步
-                    SuFeiApp(
-                        navigator = navigator,
-                        entryProviderScopes = entryProviderScopes
-                    )
-                } else {
-                    SplashScreen(onInitComplete = {})
+            CompositionLocalProvider(LocalTextScale provides textScale) {
+                SuFeiTheme(
+                    darkTheme = userPreferences.useDarkTheme,
+                    dynamicColor = userPreferences.useDynamicColor
+                ) {
+                    val splashViewModel: SplashViewModel = hiltViewModel()
+                    val importState by splashViewModel.importState.collectAsState()
+
+                    if (importState is ImportState.Success) {
+                        // 使用注入的单例 navigator，确保全站状态同步
+                        SuFeiApp(
+                            navigator = navigator,
+                            entryProviderScopes = entryProviderScopes
+                        )
+                    } else {
+                        SplashScreen(onInitComplete = {})
+                    }
                 }
             }
         }

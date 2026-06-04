@@ -25,7 +25,9 @@ import dev.wceng.sufei.data.model.Poet
 import dev.wceng.sufei.data.model.PoetDescription
 import dev.wceng.sufei.data.model.UserPoem
 import dev.wceng.sufei.ui.components.PoemPreviewCard
+import dev.wceng.sufei.ui.theme.LocalTextScale
 import dev.wceng.sufei.ui.theme.SuFeiTheme
+import dev.wceng.sufei.ui.theme.scaledBy
 
 @Composable
 fun PoetDetailScreen(
@@ -97,6 +99,7 @@ private fun PoetDetailScrollableContent(
     poems: List<UserPoem>,
     onPoemClick: (String) -> Unit
 ) {
+    val textScale = LocalTextScale.current
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -124,13 +127,13 @@ private fun PoetDetailScrollableContent(
             text = poet.name,
             style = MaterialTheme.typography.displaySmall.copy(
                 fontWeight = FontWeight.Bold
-            )
+            ).scaledBy(textScale)
         )
         Text(
             text = poet.dynasty,
             style = MaterialTheme.typography.bodyLarge.copy(
                 color = MaterialTheme.colorScheme.secondary
-            ),
+            ).scaledBy(textScale),
             modifier = Modifier.padding(top = 8.dp)
         )
 
@@ -142,7 +145,7 @@ private fun PoetDetailScrollableContent(
                 style = MaterialTheme.typography.bodyMedium.copy(
                     lineHeight = 24.sp,
                     textAlign = TextAlign.Center
-                ),
+                ).scaledBy(textScale),
                 modifier = Modifier.padding(horizontal = 16.dp)
             )
         }
@@ -158,14 +161,14 @@ private fun PoetDetailScrollableContent(
                 style = MaterialTheme.typography.titleMedium.copy(
                     color = MaterialTheme.colorScheme.primary,
                     fontWeight = FontWeight.Bold
-                )
+                ).scaledBy(textScale)
             )
             Spacer(modifier = Modifier.height(16.dp))
             Text(
                 text = desc.content,
                 style = MaterialTheme.typography.bodyLarge.copy(
                     lineHeight = 28.sp
-                )
+                ).scaledBy(textScale)
             )
         }
 
@@ -176,7 +179,7 @@ private fun PoetDetailScrollableContent(
                 text = "作品集",
                 style = MaterialTheme.typography.titleLarge.copy(
                     fontWeight = FontWeight.Bold
-                ),
+                ).scaledBy(textScale),
                 modifier = Modifier.fillMaxWidth(),
                 textAlign = TextAlign.Start
             )

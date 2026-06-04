@@ -66,7 +66,9 @@ import androidx.lifecycle.compose.LocalLifecycleOwner
 import dev.wceng.sufei.data.model.Poem
 import dev.wceng.sufei.data.model.UserPoem
 import dev.wceng.sufei.ui.components.LoginPromptDialog
+import dev.wceng.sufei.ui.theme.LocalTextScale
 import dev.wceng.sufei.ui.theme.SuFeiTheme
+import dev.wceng.sufei.ui.theme.scaledBy
 
 
 @Composable
@@ -221,6 +223,7 @@ fun PoemReader(
     modifier: Modifier = Modifier
 ) {
     val poem = userPoem.poem
+    val textScale = LocalTextScale.current
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -236,7 +239,7 @@ fun PoemReader(
                 fontSize = 20.sp,
                 letterSpacing = 2.sp,
                 color = if (currentSentenceIndex == 0) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onBackground
-            ),
+            ).scaledBy(textScale),
             textAlign = TextAlign.Center
         )
 
@@ -249,21 +252,21 @@ fun PoemReader(
                 style = MaterialTheme.typography.bodyLarge.copy(
                     color = if (currentSentenceIndex == 1) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
                     fontSize = 14.sp
-                )
+                ).scaledBy(textScale)
             )
             Text(
                 text = " · ",
                 style = MaterialTheme.typography.bodyLarge.copy(
                     color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
                     fontSize = 14.sp
-                )
+                ).scaledBy(textScale)
             )
             Text(
                 text = poem.author,
                 style = MaterialTheme.typography.bodyLarge.copy(
                     color = if (currentSentenceIndex == 2) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f),
                     fontSize = 14.sp
-                )
+                ).scaledBy(textScale)
             )
         }
 
@@ -283,7 +286,7 @@ fun PoemReader(
                                 text = tag,
                                 style = MaterialTheme.typography.labelSmall.copy(
                                     fontSize = 11.sp
-                                )
+                            ).scaledBy(textScale)
                             )
                         },
                         border = SuggestionChipDefaults.suggestionChipBorder(
@@ -335,6 +338,7 @@ fun PoemReader(
 @Composable
 private fun PoemBody(paragraphs: List<String>, currentSentenceIndex: Int?) {
     var globalVerseIndex = 3 // 从 3 开始，因为 0:标题, 1:朝代, 2:作者
+    val textScale = LocalTextScale.current
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         paragraphs.forEach { paragraph ->
             FlowRow(
@@ -352,7 +356,7 @@ private fun PoemBody(paragraphs: List<String>, currentSentenceIndex: Int?) {
                             lineHeight = 32.sp,
                             letterSpacing = 2.sp,
                             color = if (isHighlight) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onBackground
-                        ),
+                        ).scaledBy(textScale),
                         softWrap = false,
                         modifier = Modifier.padding(horizontal = 6.dp, vertical = 4.dp)
                     )
@@ -372,6 +376,7 @@ private fun ExpandableInterpretationSection(
 ) {
     if (content.isNullOrBlank()) return
     
+    val textScale = LocalTextScale.current
     var expanded by remember { mutableStateOf(false) }
     
     Column(modifier = Modifier.fillMaxWidth()) {
@@ -388,7 +393,7 @@ private fun ExpandableInterpretationSection(
                 style = MaterialTheme.typography.titleMedium.copy(
                     fontWeight = FontWeight.Bold,
                     fontSize = 16.sp
-                ),
+                ).scaledBy(textScale),
                 color = MaterialTheme.colorScheme.primary
             )
             Icon(
@@ -407,7 +412,7 @@ private fun ExpandableInterpretationSection(
                 style = MaterialTheme.typography.bodyLarge.copy(
                     lineHeight = (24 * multiplier).sp,
                     fontSize = (14 * multiplier).sp
-                ),
+                ).scaledBy(textScale),
                 modifier = Modifier.padding(bottom = 16.dp)
             )
         }
