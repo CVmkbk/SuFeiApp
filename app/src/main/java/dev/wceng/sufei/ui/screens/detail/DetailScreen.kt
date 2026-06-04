@@ -200,7 +200,7 @@ fun DetailContent(
                         OutlinedButton(onClick = onRefresh) {
                             Icon(
                                 Icons.Default.Refresh,
-                                contentDescription = null,
+                                contentDescription = "重试",
                                 modifier = Modifier.size(18.dp)
                             )
                             Spacer(modifier = Modifier.width(8.dp))

@@ -272,7 +272,7 @@ private fun ProfileHeaderSection(
                 } else {
                     Icon(
                         imageVector = Icons.Default.AccountCircle,
-                        contentDescription = null,
+                        contentDescription = "默认头像",
                         modifier = Modifier.size(64.dp),
                         tint = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.3f)
                     )

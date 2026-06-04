@@ -485,7 +485,7 @@ private fun RestartBar(
         ) {
             Icon(
                 imageVector = Icons.Default.Refresh,
-                contentDescription = null,
+                contentDescription = "再来一局",
                 modifier = Modifier.size(18.dp)
             )
             Spacer(modifier = Modifier.width(4.dp))

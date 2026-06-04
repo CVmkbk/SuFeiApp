@@ -215,7 +215,7 @@ fun ExploreContent(
                 ) {
                     Icon(
                         Icons.Default.Search,
-                        contentDescription = null,
+                        contentDescription = "搜索",
                         modifier = Modifier.size(18.dp)
                     )
                     Spacer(modifier = Modifier.width(4.dp))
@@ -359,10 +359,10 @@ fun FilterRowWithMore(
             )
         }
         item {
-            IconButton(onClick = onMore, modifier = Modifier.size(32.dp)) {
+            IconButton(onClick = onMore, modifier = Modifier.size(48.dp)) {
                 Icon(
                     imageVector = Icons.Default.MoreHoriz,
-                    contentDescription = null,
+                    contentDescription = "更多选项",
                     tint = MaterialTheme.colorScheme.primary
                 )
             }
