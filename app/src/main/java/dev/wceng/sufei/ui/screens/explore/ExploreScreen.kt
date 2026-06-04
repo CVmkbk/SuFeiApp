@@ -278,12 +278,18 @@ fun ExploreContent(
         }
 
         LazyVerticalStaggeredGrid(
-            columns = StaggeredGridCells.Fixed(2),
+            columns = StaggeredGridCells.Adaptive(160.dp),
             modifier = Modifier.fillMaxSize(),
             contentPadding = PaddingValues(12.dp),
             horizontalArrangement = Arrangement.spacedBy(12.dp),
             verticalItemSpacing = 12.dp
         ) {
+            if (searchResult.poets.isEmpty() && searchResult.poems.isEmpty()) {
+                item(span = StaggeredGridItemSpan.FullLine) {
+                    EmptyExploreResult(modifier = Modifier.padding(top = 80.dp))
+                }
+            }
+
             if (searchResult.poets.isNotEmpty()) {
                 item(span = StaggeredGridItemSpan.FullLine) {
                     SectionTitle("诗人")
@@ -376,6 +382,28 @@ fun SectionTitle(title: String) {
             .padding(vertical = 8.dp)
             .fillMaxWidth()
     )
+}
+
+@Composable
+fun EmptyExploreResult(modifier: Modifier = Modifier) {
+    Column(
+        modifier = modifier.fillMaxWidth(),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = "未找到结果",
+            style = MaterialTheme.typography.titleMedium.copy(
+                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.5f)
+            )
+        )
+        Spacer(modifier = Modifier.height(8.dp))
+        Text(
+            text = "尝试其他关键词或筛选条件",
+            style = MaterialTheme.typography.bodySmall.copy(
+                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.35f)
+            )
+        )
+    }
 }
 
 @Preview(showBackground = true)

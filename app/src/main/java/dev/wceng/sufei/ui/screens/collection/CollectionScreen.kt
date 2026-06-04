@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Explore
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.*
@@ -30,6 +31,7 @@ import kotlinx.coroutines.launch
 fun CollectionScreen(
     onPoemClick: (String) -> Unit,
     onLoginClick: () -> Unit = {},
+    onExploreClick: () -> Unit = {},
     viewModel: CollectionViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -67,7 +69,8 @@ fun CollectionScreen(
                 }
             }
         },
-        onRefresh = { viewModel.refresh() }
+        onRefresh = { viewModel.refresh() },
+        onExploreClick = onExploreClick
     )
 
     if (showLoginDialog) {
@@ -88,7 +91,8 @@ fun CollectionContent(
     snackbarHostState: SnackbarHostState,
     onPoemClick: (String) -> Unit,
     onToggleFavorite: (String, Boolean) -> Unit,
-    onRefresh: () -> Unit
+    onRefresh: () -> Unit,
+    onExploreClick: () -> Unit = {}
 ) {
     Scaffold(
         topBar = {
@@ -111,7 +115,10 @@ fun CollectionContent(
                     CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
                 }
                 is CollectionUiState.Empty -> {
-                    EmptyCollectionState(modifier = Modifier.align(Alignment.Center))
+                    EmptyCollectionState(
+                        modifier = Modifier.align(Alignment.Center),
+                        onExploreClick = onExploreClick
+                    )
                 }
                 is CollectionUiState.Success -> {
                     FavoritePoemList(
@@ -227,7 +234,10 @@ fun FavoritePoemItem(
 }
 
 @Composable
-fun EmptyCollectionState(modifier: Modifier = Modifier) {
+fun EmptyCollectionState(
+    modifier: Modifier = Modifier,
+    onExploreClick: () -> Unit = {}
+) {
     Box(modifier = modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Text(
@@ -243,6 +253,16 @@ fun EmptyCollectionState(modifier: Modifier = Modifier) {
                 ),
                 modifier = Modifier.padding(top = 8.dp)
             )
+            Spacer(modifier = Modifier.height(24.dp))
+            FilledTonalButton(onClick = onExploreClick) {
+                Icon(
+                    Icons.Default.Explore,
+                    contentDescription = null,
+                    modifier = Modifier.size(18.dp)
+                )
+                Spacer(modifier = Modifier.width(6.dp))
+                Text("去发现")
+            }
         }
     }
 }
