@@ -45,7 +45,8 @@ class MainActivity : ComponentActivity() {
                 .collectAsState(initial = UserPreferences())
 
             SuFeiTheme(
-                darkTheme = userPreferences.useDarkTheme
+                darkTheme = userPreferences.useDarkTheme,
+                dynamicColor = userPreferences.useDynamicColor
             ) {
                 val splashViewModel: SplashViewModel = hiltViewModel()
                 val importState by splashViewModel.importState.collectAsState()

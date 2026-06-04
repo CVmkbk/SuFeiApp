@@ -7,7 +7,7 @@ data class UserPreferences(
     val favoritePoemIds: Set<String> = emptySet(),
     val fontSizeMultiplier: Float = 1.0f,
     val lineHeightMultiplier: Float = 1.0f,
-    val useDynamicColor: Boolean = true,
+    val useDynamicColor: Boolean = false,
     val useDarkTheme: Boolean = false,
     val fontFamilyName: String = "Serif",
     val dailyPoemId: String = "",

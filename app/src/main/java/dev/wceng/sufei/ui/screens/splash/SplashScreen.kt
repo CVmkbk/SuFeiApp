@@ -16,12 +16,11 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import dev.wceng.sufei.data.repository.ImportState
+import dev.wceng.sufei.ui.components.SplashLogoGroup
 import dev.wceng.sufei.ui.theme.SuFeiTheme
 
 @Composable
@@ -67,7 +66,7 @@ fun SplashContent(importState: ImportState) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            // App 名称 (Logo) — 带入场动画
+            // App Logo — 印章 + 文字，带入场动画
             AnimatedVisibility(
                 visible = true,
                 enter = fadeIn(animationSpec = tween(800)) +
@@ -76,17 +75,10 @@ fun SplashContent(importState: ImportState) {
                             initialOffsetY = { it / 6 }
                         )
             ) {
-                Text(
-                    text = "素扉",
-                    style = MaterialTheme.typography.displayLarge.copy(
-                        fontWeight = FontWeight.Light,
-                        color = MaterialTheme.colorScheme.onBackground,
-                        letterSpacing = 8.sp
-                    )
-                )
+                SplashLogoGroup(sealSizeDp = 88f)
             }
             
-            Spacer(modifier = Modifier.height(64.dp))
+            Spacer(modifier = Modifier.height(48.dp))
 
             // 导入状态展示
             when (val state = importState) {

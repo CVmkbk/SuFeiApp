@@ -19,7 +19,7 @@ class UserPreferencesDataSource(
                 favoritePoemIds = proto.favoritePoemIdsList.toSet(),
                 fontSizeMultiplier = if (proto.fontSizeMultiplier == 0f) 1.0f else proto.fontSizeMultiplier,
                 lineHeightMultiplier = if (proto.lineHeightMultiplier == 0f) 1.0f else proto.lineHeightMultiplier,
-                useDynamicColor = proto.useDynamicColor,
+                useDynamicColor = false,
                 useDarkTheme = proto.useDarkTheme,
                 fontFamilyName = proto.fontFamilyName.ifEmpty { "Serif" },
                 dailyPoemId = proto.dailyPoemId,

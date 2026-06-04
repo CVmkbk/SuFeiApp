@@ -88,8 +88,9 @@ private val darkScheme = darkColorScheme(
 @Composable
 fun SuFeiTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
-    // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = true,
+    // Dynamic color 默认关闭，保留素扉专属的中国风暖色配色体系（妃红、墨棕、宣纸暖白）
+    // 用户在设置中可以手动开启以跟随系统壁纸色调
+    dynamicColor: Boolean = false,
     content: @Composable () -> Unit
 ) {
     val colorScheme = when {
