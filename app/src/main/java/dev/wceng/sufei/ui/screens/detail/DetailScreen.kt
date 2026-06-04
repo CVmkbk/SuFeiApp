@@ -1,5 +1,11 @@
 package dev.wceng.sufei.ui.screens.detail
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -23,6 +29,8 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Stop
+import androidx.compose.material.icons.filled.ExpandLess
+import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
@@ -41,7 +49,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -55,7 +65,6 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import dev.wceng.sufei.data.model.Poem
 import dev.wceng.sufei.data.model.UserPoem
-import dev.wceng.sufei.ui.components.InterpretationSection
 import dev.wceng.sufei.ui.components.LoginPromptDialog
 import dev.wceng.sufei.ui.theme.SuFeiTheme
 
@@ -312,10 +321,10 @@ fun PoemReader(
             HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
             Spacer(modifier = Modifier.height(32.dp))
             
-            InterpretationSection(title = "注释", content = poem.notes, multiplier = 1.0f)
-            InterpretationSection(title = "译文", content = poem.translation, multiplier = 1.0f)
-            InterpretationSection(title = "赏析", content = poem.intro, multiplier = 1.0f)
-            InterpretationSection(title = "背景", content = poem.background, multiplier = 1.0f)
+            ExpandableInterpretationSection(title = "注释", content = poem.notes, multiplier = 1.0f)
+            ExpandableInterpretationSection(title = "译文", content = poem.translation, multiplier = 1.0f)
+            ExpandableInterpretationSection(title = "赏析", content = poem.intro, multiplier = 1.0f)
+            ExpandableInterpretationSection(title = "背景", content = poem.background, multiplier = 1.0f)
         }
 
         Spacer(modifier = Modifier.height(64.dp))
@@ -351,6 +360,56 @@ private fun PoemBody(paragraphs: List<String>, currentSentenceIndex: Int?) {
                 }
             }
             Spacer(modifier = Modifier.height(16.dp))
+        }
+    }
+}
+
+@Composable
+private fun ExpandableInterpretationSection(
+    title: String,
+    content: String?,
+    multiplier: Float
+) {
+    if (content.isNullOrBlank()) return
+    
+    var expanded by remember { mutableStateOf(false) }
+    
+    Column(modifier = Modifier.fillMaxWidth()) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable { expanded = !expanded }
+                .padding(vertical = 12.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.titleMedium.copy(
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 16.sp
+                ),
+                color = MaterialTheme.colorScheme.primary
+            )
+            Icon(
+                imageVector = if (expanded) Icons.Default.ExpandLess else Icons.Default.ExpandMore,
+                contentDescription = if (expanded) "收起" else "展开",
+                tint = MaterialTheme.colorScheme.primary
+            )
+        }
+        AnimatedVisibility(
+            visible = expanded,
+            enter = expandVertically() + fadeIn(),
+            exit = shrinkVertically() + fadeOut()
+        ) {
+            Text(
+                text = content,
+                style = MaterialTheme.typography.bodyLarge.copy(
+                    lineHeight = (24 * multiplier).sp,
+                    fontSize = (14 * multiplier).sp
+                ),
+                modifier = Modifier.padding(bottom = 16.dp)
+            )
         }
     }
 }

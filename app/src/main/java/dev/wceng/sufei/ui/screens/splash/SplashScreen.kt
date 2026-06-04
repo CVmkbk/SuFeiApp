@@ -1,5 +1,13 @@
 package dev.wceng.sufei.ui.screens.splash
 
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.LinearProgressIndicator
@@ -22,15 +30,29 @@ fun SplashScreen(
     viewModel: SplashViewModel = hiltViewModel()
 ) {
     val importState by viewModel.importState.collectAsState()
+    var readyToExit by remember { mutableStateOf(false) }
 
-    // 监听导入状态，成功后跳转
     LaunchedEffect(importState) {
         if (importState is ImportState.Success) {
+            readyToExit = true
+        }
+    }
+
+    // 延迟后触发跳转，让退出动画播放完成
+    LaunchedEffect(readyToExit) {
+        if (readyToExit) {
+            kotlinx.coroutines.delay(600)
             onInitComplete()
         }
     }
 
-    SplashContent(importState = importState)
+    AnimatedVisibility(
+        visible = !readyToExit,
+        exit = fadeOut(animationSpec = tween(400)) +
+                slideOutVertically(animationSpec = tween(400)) { it / 4 }
+    ) {
+        SplashContent(importState = importState)
+    }
 }
 
 @Composable
@@ -45,15 +67,24 @@ fun SplashContent(importState: ImportState) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            // App 名称 (Logo)
-            Text(
-                text = "素扉",
-                style = MaterialTheme.typography.displayLarge.copy(
-                    fontWeight = FontWeight.Light,
-                    color = MaterialTheme.colorScheme.onBackground,
-                    letterSpacing = 8.sp
+            // App 名称 (Logo) — 带入场动画
+            AnimatedVisibility(
+                visible = true,
+                enter = fadeIn(animationSpec = tween(800)) +
+                        slideInVertically(
+                            animationSpec = tween(800),
+                            initialOffsetY = { it / 6 }
+                        )
+            ) {
+                Text(
+                    text = "素扉",
+                    style = MaterialTheme.typography.displayLarge.copy(
+                        fontWeight = FontWeight.Light,
+                        color = MaterialTheme.colorScheme.onBackground,
+                        letterSpacing = 8.sp
+                    )
                 )
-            )
+            }
             
             Spacer(modifier = Modifier.height(64.dp))
 
@@ -81,12 +112,26 @@ fun SplashContent(importState: ImportState) {
                         
                         Spacer(modifier = Modifier.height(16.dp))
                         
-                        Text(
-                            text = message,
-                            style = MaterialTheme.typography.bodySmall.copy(
-                                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
+                        // 提示语 — 使用 AnimatedContent 实现交叉淡入淡出
+                        AnimatedContent(
+                            targetState = message,
+                            transitionSpec = {
+                                (fadeIn(animationSpec = tween(500)) +
+                                        slideInVertically(animationSpec = tween(500)) { it / 4 })
+                                    .togetherWith(
+                                        fadeOut(animationSpec = tween(300)) +
+                                                slideOutVertically(animationSpec = tween(300)) { -it / 4 }
+                                    )
+                            },
+                            label = "splash_message"
+                        ) { text ->
+                            Text(
+                                text = text,
+                                style = MaterialTheme.typography.bodySmall.copy(
+                                    color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.6f)
+                                )
                             )
-                        )
+                        }
                     }
                 }
                 is ImportState.Error -> {

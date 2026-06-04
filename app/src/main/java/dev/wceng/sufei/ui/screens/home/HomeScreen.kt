@@ -1,10 +1,21 @@
 package dev.wceng.sufei.ui.screens.home
 
 import android.content.Intent
+import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
+import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.FavoriteBorder
@@ -18,6 +29,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalLifecycleOwner
@@ -168,79 +181,102 @@ private fun HomeContent(
     val displayLines = remember(poem.content) { extractHighlight(poem) }
     val context = LocalContext.current
 
+    // 收藏按钮弹跳动画
+    val favoriteScale by animateFloatAsState(
+        targetValue = if (userPoem.isFavorite) 1.15f else 1f,
+        animationSpec = spring(dampingRatio = 0.5f, stiffness = 400f),
+        label = "favorite_scale"
+    )
+
     Box(
         modifier = Modifier
             .fillMaxSize()
             .padding(bottom = 12.dp)
     ) {
-        Row(
-            modifier = Modifier
-                .align(Alignment.Center)
-                .fillMaxWidth()
-                .padding(horizontal = 48.dp)
-                .clickable(onClick = onPoemClick),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            // 左侧：标题与诗人
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                modifier = Modifier.wrapContentWidth()
-            ) {
-                MultiColumnVerticalText(
-                    text = poem.title,
-                    spacing = 3.dp,
-                    columnSpacing = 12.dp,
-                    maxCharsPerColumn = 8,
-                    style = MaterialTheme.typography.displaySmall.copy(
-                        fontFamily = NotoSerifSC,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.onBackground,
-                        fontSize = 24.sp
-                    )
-                )
-
-                Spacer(modifier = Modifier.height(20.dp))
-
-                Box(
-                    modifier = Modifier
-                        .width(IntrinsicSize.Min)
-                        .border(0.8.dp, MaterialTheme.colorScheme.primary)
-                    .padding(horizontal = 3.dp, vertical = 5.dp)
-                ) {
-                    VerticalText(
-                        text = poem.author,
-                        spacing = 2.dp,
-                        style = MaterialTheme.typography.bodyMedium.copy(
-                            fontFamily = NotoSerifSC,
-                            color = MaterialTheme.colorScheme.primary,
-                            fontWeight = FontWeight.Medium,
-                            fontSize = 12.sp
-                        )
-                    )
-                }
-            }
-
-            // 右侧：诗词正文
+        // 诗词核心区 — 使用 AnimatedContent 实现切换渐变
+        AnimatedContent(
+            targetState = poem.id,
+            modifier = Modifier.align(Alignment.Center),
+            transitionSpec = {
+                (fadeIn(animationSpec = tween(400)) + scaleIn(
+                    initialScale = 0.94f,
+                    animationSpec = tween(400)
+                )) togetherWith
+                (fadeOut(animationSpec = tween(300)) + scaleOut(
+                    targetScale = 0.94f,
+                    animationSpec = tween(300)
+                ))
+            },
+            label = "poem_content"
+        ) { _ ->
             Row(
-                horizontalArrangement = Arrangement.End,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 48.dp)
+                    .clickable(onClick = onPoemClick),
+                horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                displayLines.asReversed().forEachIndexed { index, line ->
-                    VerticalText(
-                        text = line,
-                        spacing = 6.dp,
-                        style = MaterialTheme.typography.headlineMedium.copy(
+                // 左侧：标题与诗人
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier.wrapContentWidth()
+                ) {
+                    MultiColumnVerticalText(
+                        text = poem.title,
+                        spacing = 3.dp,
+                        columnSpacing = 12.dp,
+                        maxCharsPerColumn = 8,
+                        style = MaterialTheme.typography.displaySmall.copy(
                             fontFamily = NotoSerifSC,
-                            fontWeight = FontWeight.Normal,
-                            lineHeight = 36.sp,
-                            letterSpacing = 1.5.sp,
-                            color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.8f),
-                            fontSize = 22.sp
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onBackground,
+                            fontSize = 24.sp
                         )
                     )
-                    if (index < displayLines.size - 1) {
-                        Spacer(modifier = Modifier.width(24.dp))
+
+                    Spacer(modifier = Modifier.height(20.dp))
+
+                    Box(
+                        modifier = Modifier
+                            .width(IntrinsicSize.Min)
+                            .border(0.8.dp, MaterialTheme.colorScheme.primary)
+                            .padding(horizontal = 3.dp, vertical = 5.dp)
+                    ) {
+                        VerticalText(
+                            text = poem.author,
+                            spacing = 2.dp,
+                            style = MaterialTheme.typography.bodyMedium.copy(
+                                fontFamily = NotoSerifSC,
+                                color = MaterialTheme.colorScheme.primary,
+                                fontWeight = FontWeight.Medium,
+                                fontSize = 12.sp
+                            )
+                        )
+                    }
+                }
+
+                // 右侧：诗词正文
+                Row(
+                    horizontalArrangement = Arrangement.End,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    displayLines.asReversed().forEachIndexed { index, line ->
+                        VerticalText(
+                            text = line,
+                            spacing = 6.dp,
+                            style = MaterialTheme.typography.headlineMedium.copy(
+                                fontFamily = NotoSerifSC,
+                                fontWeight = FontWeight.Normal,
+                                lineHeight = 36.sp,
+                                letterSpacing = 1.5.sp,
+                                color = MaterialTheme.colorScheme.onBackground.copy(alpha = 0.8f),
+                                fontSize = 22.sp
+                            )
+                        )
+                        if (index < displayLines.size - 1) {
+                            Spacer(modifier = Modifier.width(24.dp))
+                        }
                     }
                 }
             }
@@ -258,7 +294,7 @@ private fun HomeContent(
                 Icon(
                     imageVector = Icons.Default.Refresh,
                     contentDescription = "换一首",
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f)
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
                 )
             }
 
@@ -279,15 +315,18 @@ private fun HomeContent(
                 Icon(
                     imageVector = Icons.Default.Share,
                     contentDescription = "分享",
-                    tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f)
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
                 )
             }
 
-            IconButton(onClick = { onFavoriteToggle(!userPoem.isFavorite) }) {
+            IconButton(
+                onClick = { onFavoriteToggle(!userPoem.isFavorite) },
+                modifier = Modifier.scale(favoriteScale)
+            ) {
                 Icon(
                     imageVector = if (userPoem.isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
                     contentDescription = "收藏",
-                    tint = if (userPoem.isFavorite) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f)
+                    tint = if (userPoem.isFavorite) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f)
                 )
             }
         }
