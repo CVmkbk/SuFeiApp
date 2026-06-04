@@ -24,7 +24,6 @@ import dev.wceng.sufei.data.model.Poem
 import dev.wceng.sufei.data.model.UserPoem
 import dev.wceng.sufei.ui.components.LoginPromptDialog
 import dev.wceng.sufei.ui.theme.SuFeiTheme
-import dev.wceng.sufei.ui.theme.sealRedLight
 import kotlinx.coroutines.launch
 
 @Composable
@@ -220,7 +219,7 @@ fun FavoritePoemItem(
                 Icon(
                     imageVector = Icons.Default.Favorite,
                     contentDescription = "取消收藏",
-                    tint = sealRedLight
+                    tint = MaterialTheme.colorScheme.primary
                 )
             }
         }

@@ -58,7 +58,7 @@ import dev.wceng.sufei.data.model.UserPoem
 import dev.wceng.sufei.ui.components.InterpretationSection
 import dev.wceng.sufei.ui.components.LoginPromptDialog
 import dev.wceng.sufei.ui.theme.SuFeiTheme
-import dev.wceng.sufei.ui.theme.sealRedLight
+
 
 @Composable
 fun DetailScreen(
@@ -147,7 +147,7 @@ fun DetailContent(
                             Icon(
                                 imageVector = if (userPoem.isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
                                 contentDescription = "收藏",
-                                tint = if (userPoem.isFavorite) sealRedLight else LocalContentColor.current
+                                tint = if (userPoem.isFavorite) MaterialTheme.colorScheme.primary else LocalContentColor.current
                             )
                         }
                     }

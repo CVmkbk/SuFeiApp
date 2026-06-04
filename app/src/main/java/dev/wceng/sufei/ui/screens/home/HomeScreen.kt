@@ -36,7 +36,7 @@ import dev.wceng.sufei.ui.components.MultiColumnVerticalText
 import dev.wceng.sufei.ui.components.VerticalText
 import dev.wceng.sufei.ui.theme.NotoSerifSC
 import dev.wceng.sufei.ui.theme.SuFeiTheme
-import dev.wceng.sufei.ui.theme.sealRedLight
+
 
 @Composable
 fun HomeScreen(
@@ -205,7 +205,7 @@ private fun HomeContent(
                 Box(
                     modifier = Modifier
                         .width(IntrinsicSize.Min)
-                        .border(0.8.dp, sealRedLight)
+                        .border(0.8.dp, MaterialTheme.colorScheme.primary)
                     .padding(horizontal = 3.dp, vertical = 5.dp)
                 ) {
                     VerticalText(
@@ -213,7 +213,7 @@ private fun HomeContent(
                         spacing = 2.dp,
                         style = MaterialTheme.typography.bodyMedium.copy(
                             fontFamily = NotoSerifSC,
-                            color = sealRedLight,
+                            color = MaterialTheme.colorScheme.primary,
                             fontWeight = FontWeight.Medium,
                             fontSize = 12.sp
                         )
@@ -287,7 +287,7 @@ private fun HomeContent(
                 Icon(
                     imageVector = if (userPoem.isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
                     contentDescription = "收藏",
-                    tint = if (userPoem.isFavorite) sealRedLight else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f)
+                    tint = if (userPoem.isFavorite) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.4f)
                 )
             }
         }

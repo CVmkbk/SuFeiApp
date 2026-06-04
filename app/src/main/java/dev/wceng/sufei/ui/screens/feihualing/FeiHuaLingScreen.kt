@@ -71,8 +71,6 @@ fun FeiHuaLingScreen(
     var inputText by remember { mutableStateOf("") }
     val listState = rememberLazyListState()
     val focusManager = LocalFocusManager.current
-    val sealRedLight = Color(0xFFE09E87)
-
     LaunchedEffect(uiState.error) {
         uiState.error?.let {
             snackbarHostState.showSnackbar(it)
@@ -94,7 +92,7 @@ fun FeiHuaLingScreen(
                         Icon(
                             imageVector = Icons.Default.FilterVintage,
                             contentDescription = null,
-                            tint = sealRedLight,
+                            tint = MaterialTheme.colorScheme.primary,
                             modifier = Modifier.size(24.dp)
                         )
                         Spacer(modifier = Modifier.width(8.dp))
@@ -134,7 +132,7 @@ fun FeiHuaLingScreen(
                         .padding(horizontal = 16.dp, vertical = 8.dp),
                     shape = RoundedCornerShape(12.dp),
                     colors = CardDefaults.cardColors(
-                        containerColor = sealRedLight.copy(alpha = 0.08f)
+                        containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.08f)
                     )
                 ) {
                     Row(
@@ -151,7 +149,7 @@ fun FeiHuaLingScreen(
                                 text = "关键字：「${uiState.keyword}」",
                                 style = MaterialTheme.typography.titleSmall,
                                 fontWeight = FontWeight.Bold,
-                                color = sealRedLight
+                                color = MaterialTheme.colorScheme.primary
                             )
                             Text(
                                 text = if (uiState.gamePhase == GamePhase.PLAYING) {
@@ -171,8 +169,7 @@ fun FeiHuaLingScreen(
             when (uiState.gamePhase) {
                 GamePhase.SETUP -> {
                     SetupPhase(
-                        onStart = { keyword -> viewModel.setKeyword(keyword) },
-                        sealRedLight = sealRedLight
+                        onStart = { keyword -> viewModel.setKeyword(keyword) }
                     )
                 }
 
@@ -190,13 +187,11 @@ fun FeiHuaLingScreen(
                                 "system_info" -> SystemInfoCard(message.content)
                                 "user" -> ChatBubble(
                                     content = message.content,
-                                    isUser = true,
-                                    sealRedLight = sealRedLight
+                                    isUser = true
                                 )
                                 "assistant" -> ChatBubble(
                                     content = message.content,
-                                    isUser = false,
-                                    sealRedLight = sealRedLight
+                                    isUser = false
                                 )
                             }
                         }
@@ -209,7 +204,7 @@ fun FeiHuaLingScreen(
                                     CircularProgressIndicator(
                                         modifier = Modifier.size(18.dp),
                                         strokeWidth = 2.dp,
-                                        color = sealRedLight
+                                        color = MaterialTheme.colorScheme.primary
                                     )
                                     Spacer(modifier = Modifier.width(8.dp))
                                     Text(
@@ -234,13 +229,11 @@ fun FeiHuaLingScreen(
                                     focusManager.clearFocus()
                                 }
                             },
-                            isLoading = uiState.isLoading,
-                            sealRedLight = sealRedLight
+                            isLoading = uiState.isLoading
                         )
                     } else {
                         RestartBar(
-                            onRestart = { viewModel.restartGame() },
-                            sealRedLight = sealRedLight
+                            onRestart = { viewModel.restartGame() }
                         )
                     }
                 }
@@ -251,8 +244,7 @@ fun FeiHuaLingScreen(
 
 @Composable
 private fun SetupPhase(
-    onStart: (String) -> Unit,
-    sealRedLight: Color
+    onStart: (String) -> Unit
 ) {
     var keyword by remember { mutableStateOf("") }
     val focusManager = LocalFocusManager.current
@@ -269,14 +261,14 @@ private fun SetupPhase(
                 imageVector = Icons.Default.FilterVintage,
                 contentDescription = null,
                 modifier = Modifier.size(72.dp),
-                tint = sealRedLight.copy(alpha = 0.6f)
+                tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.6f)
             )
             Spacer(modifier = Modifier.height(16.dp))
             Text(
                 text = "飞花令",
                 style = MaterialTheme.typography.headlineLarge,
                 fontWeight = FontWeight.Bold,
-                color = sealRedLight
+                color = MaterialTheme.colorScheme.primary
             )
             Spacer(modifier = Modifier.height(4.dp))
             Text(
@@ -299,9 +291,9 @@ private fun SetupPhase(
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(0.7f),
                 colors = OutlinedTextFieldDefaults.colors(
-                    focusedBorderColor = sealRedLight,
-                    focusedLabelColor = sealRedLight,
-                    cursorColor = sealRedLight
+                    focusedBorderColor = MaterialTheme.colorScheme.primary,
+                    focusedLabelColor = MaterialTheme.colorScheme.primary,
+                    cursorColor = MaterialTheme.colorScheme.primary
                 ),
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                 keyboardActions = KeyboardActions(
@@ -325,12 +317,12 @@ private fun SetupPhase(
                         },
                         shape = RoundedCornerShape(20.dp),
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = sealRedLight.copy(alpha = 0.1f)
+                            containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
                         )
                     ) {
                         Text(
                             text = preset,
-                            color = sealRedLight,
+                            color = MaterialTheme.colorScheme.primary,
                             fontWeight = FontWeight.Medium
                         )
                     }
@@ -348,7 +340,7 @@ private fun SetupPhase(
                 shape = RoundedCornerShape(12.dp),
                 modifier = Modifier.fillMaxWidth(0.5f),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = sealRedLight
+                    containerColor = MaterialTheme.colorScheme.primary
                 )
             ) {
                 Text("开始飞花令", color = Color.White)
@@ -379,8 +371,7 @@ private fun SystemInfoCard(content: String) {
 @Composable
 private fun ChatBubble(
     content: String,
-    isUser: Boolean,
-    sealRedLight: Color
+    isUser: Boolean
 ) {
     Column(
         modifier = Modifier.fillMaxWidth(),
@@ -392,7 +383,7 @@ private fun ChatBubble(
             color = if (isUser) {
                 MaterialTheme.colorScheme.primary
             } else {
-                sealRedLight
+                MaterialTheme.colorScheme.primary
             },
             modifier = Modifier.padding(horizontal = 4.dp, vertical = 2.dp)
         )
@@ -407,7 +398,7 @@ private fun ChatBubble(
                 containerColor = if (isUser) {
                     MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.6f)
                 } else {
-                    sealRedLight.copy(alpha = 0.08f)
+                    MaterialTheme.colorScheme.primary.copy(alpha = 0.08f)
                 }
             )
         ) {
@@ -425,8 +416,7 @@ private fun InputBar(
     inputText: String,
     onInputChange: (String) -> Unit,
     onSend: () -> Unit,
-    isLoading: Boolean,
-    sealRedLight: Color
+    isLoading: Boolean
 ) {
     Row(
         modifier = Modifier
@@ -443,8 +433,8 @@ private fun InputBar(
             enabled = !isLoading,
             shape = RoundedCornerShape(20.dp),
             colors = OutlinedTextFieldDefaults.colors(
-                focusedBorderColor = sealRedLight,
-                cursorColor = sealRedLight
+                focusedBorderColor = MaterialTheme.colorScheme.primary,
+                cursorColor = MaterialTheme.colorScheme.primary
             ),
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Send),
             keyboardActions = KeyboardActions(onSend = { onSend() })
@@ -457,7 +447,7 @@ private fun InputBar(
                 .size(44.dp)
                 .clip(CircleShape)
                 .background(
-                    if (inputText.isNotBlank() && !isLoading) sealRedLight
+                    if (inputText.isNotBlank() && !isLoading) MaterialTheme.colorScheme.primary
                     else MaterialTheme.colorScheme.surfaceVariant
                 )
         ) {
@@ -480,8 +470,7 @@ private fun InputBar(
 
 @Composable
 private fun RestartBar(
-    onRestart: () -> Unit,
-    sealRedLight: Color
+    onRestart: () -> Unit
 ) {
     Box(
         modifier = Modifier
@@ -492,7 +481,7 @@ private fun RestartBar(
         Button(
             onClick = onRestart,
             shape = RoundedCornerShape(12.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = sealRedLight)
+            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
         ) {
             Icon(
                 imageVector = Icons.Default.Refresh,

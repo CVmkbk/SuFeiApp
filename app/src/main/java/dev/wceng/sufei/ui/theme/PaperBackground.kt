@@ -14,8 +14,6 @@ import androidx.compose.ui.graphics.ImageShader
 import androidx.compose.ui.graphics.Paint
 import androidx.compose.ui.graphics.ShaderBrush
 import androidx.compose.ui.graphics.TileMode
-import kotlin.math.cos
-import kotlin.math.sin
 import kotlin.random.Random
 
 /**
@@ -52,10 +50,9 @@ fun PaperBackground(
 /**
  * 程序化生成一张可平铺的纸张纹理位图。
  *
- * 纹理包含三层：
+ * 纹理包含两层：
  * 1. 暖色纸基底色
- * 2. 随机短纤维线条（模拟纸浆纤维）
- * 3. 随机噪点颗粒（模拟纸张表面粗糙度）
+ * 2. 随机噪点颗粒（模拟纸张表面粗糙度）
  *
  * @param width  纹理宽度（像素）
  * @param height 纹理高度（像素）
@@ -68,46 +65,25 @@ private fun generatePaperTexture(
 ): ImageBitmap {
     val bitmap = ImageBitmap(width, height)
     val canvas = androidx.compose.ui.graphics.Canvas(bitmap)
-    val random = Random(42) // 固定种子，保证纹理一致性
+    val random = Random(42)
 
-    // 第一层：纸基底色
-    val baseColor = if (isDark) Color(0xFF2A2520) else Color(0xFFF5F0E8)
+    // 第一层：纸基底色 — 浅色暖宣纸色 / 深色暖灰墨色
+    val baseColor = if (isDark) Color(0xFF1E1B18) else Color(0xFFF7F2E8)
     canvas.drawRect(
         Rect(0f, 0f, width.toFloat(), height.toFloat()),
         Paint().apply { color = baseColor }
     )
 
-    // 第二层：纤维线条
-    val fiberColor = if (isDark) Color.White else Color(0xFF8B7355)
-    repeat(200) {
-        val x1 = random.nextFloat() * width
-        val y1 = random.nextFloat() * height
-        val length = random.nextFloat() * 15f + 2f
-        val angle = random.nextFloat() * 360f
-        val rad = Math.toRadians(angle.toDouble())
-        val x2 = x1 + length * cos(rad).toFloat()
-        val y2 = y1 + length * sin(rad).toFloat()
-
-        canvas.drawLine(
-            Offset(x1, y1),
-            Offset(x2, y2),
-            Paint().apply {
-                color = fiberColor.copy(alpha = random.nextFloat() * 0.03f)
-                strokeWidth = 0.5f
-            }
-        )
-    }
-
-    // 第三层：表面颗粒
-    val grainColor = if (isDark) Color.White else Color.Black
-    repeat(500) {
+    // 第二层：表面颗粒 — 优化为更精细的噪点分布
+    val grainColor = if (isDark) Color.White else Color(0xFF8B7355)
+    repeat(800) {
         val x = random.nextFloat() * width
         val y = random.nextFloat() * height
         canvas.drawCircle(
             Offset(x, y),
-            radius = random.nextFloat() * 1.5f,
+            radius = random.nextFloat() * 1.2f,
             Paint().apply {
-                color = grainColor.copy(alpha = random.nextFloat() * 0.02f)
+                color = grainColor.copy(alpha = random.nextFloat() * 0.015f)
             }
         )
     }

@@ -59,7 +59,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
 import dev.wceng.sufei.ui.theme.SuFeiTheme
-import dev.wceng.sufei.ui.theme.sealRedLight
+
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -169,7 +169,7 @@ fun ProfileScreen(
                     Icon(
                         imageVector = if (enabled) Icons.Default.Favorite else Icons.Outlined.FavoriteBorder,
                         contentDescription = null,
-                        tint = if (enabled) sealRedLight else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f),
+                        tint = if (enabled) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.4f),
                         modifier = Modifier.size(24.dp)
                     )
                     Spacer(modifier = Modifier.width(12.dp))
