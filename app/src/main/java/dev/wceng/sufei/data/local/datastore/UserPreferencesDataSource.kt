@@ -23,7 +23,8 @@ class UserPreferencesDataSource(
                 useDarkTheme = proto.useDarkTheme,
                 fontFamilyName = proto.fontFamilyName.ifEmpty { "Serif" },
                 dailyPoemId = proto.dailyPoemId,
-                lastUpdateMillis = proto.lastUpdateMillis
+                lastUpdateMillis = proto.lastUpdateMillis,
+                musicEnabled = proto.musicEnabled
             )
         }
 
@@ -63,6 +64,10 @@ class UserPreferencesDataSource(
 
     suspend fun setFontFamilyName(name: String) {
         updateData { it.toBuilder().setFontFamilyName(name).build() }
+    }
+
+    suspend fun setMusicEnabled(enabled: Boolean) {
+        updateData { it.toBuilder().setMusicEnabled(enabled).build() }
     }
 
     /**

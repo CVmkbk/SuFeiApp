@@ -21,6 +21,7 @@ import androidx.compose.material.icons.filled.ChevronRight
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Palette
+import androidx.compose.material.icons.filled.MusicNote
 import androidx.compose.material.icons.filled.TextFormat
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material3.AlertDialog
@@ -223,6 +224,15 @@ fun ProfileScreen(
                 label = "夜间模式",
                 checked = userPreferences.useDarkTheme,
                 onCheckedChange = viewModel::setUseDarkTheme
+            )
+
+            Spacer(modifier = Modifier.height(24.dp))
+            PreferenceSectionTitle(title = "背景音乐", icon = Icons.Default.MusicNote)
+
+            PreferenceSwitch(
+                label = "背景音乐",
+                checked = userPreferences.musicEnabled,
+                onCheckedChange = viewModel::setMusicEnabled
             )
 
             Spacer(modifier = Modifier.height(32.dp))

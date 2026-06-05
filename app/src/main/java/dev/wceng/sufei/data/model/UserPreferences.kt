@@ -11,5 +11,6 @@ data class UserPreferences(
     val useDarkTheme: Boolean = false,
     val fontFamilyName: String = "Serif",
     val dailyPoemId: String = "",
-    val lastUpdateMillis: Long = 0L
+    val lastUpdateMillis: Long = 0L,
+    val musicEnabled: Boolean = true
 )

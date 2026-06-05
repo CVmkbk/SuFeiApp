@@ -15,4 +15,6 @@ message UserPreferences {
   int64 last_update_millis = 7;
   // 是否启用深色主题
   bool use_dark_theme = 8;
+  // 是否启用背景音乐
+  bool music_enabled = 9;
 }

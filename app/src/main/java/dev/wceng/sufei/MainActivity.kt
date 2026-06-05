@@ -4,9 +4,12 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.hilt.navigation.compose.hiltViewModel
+import dev.wceng.sufei.data.media.BackgroundMusicManager
 import dev.wceng.sufei.data.model.UserPreferences
 import dev.wceng.sufei.data.repository.ImportState
 import dev.wceng.sufei.data.repository.UserPreferencesRepository
@@ -21,6 +24,8 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import dev.wceng.sufei.ui.navigation.EntryProviderInstaller
 import dev.wceng.sufei.ui.navigation.Navigator
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -38,14 +43,25 @@ class MainActivity : ComponentActivity() {
     @Inject
     lateinit var userPreferencesRepository: UserPreferencesRepository
 
+    @Inject
+    lateinit var musicManager: BackgroundMusicManager
+
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            // 直接从仓库收集用户偏好流
             val userPreferences by userPreferencesRepository.userPreferences
                 .collectAsState(initial = UserPreferences())
+
+            // 背景音乐：根据用户偏好开关
+            LaunchedEffect(Unit) {
+                snapshotFlow { userPreferences.musicEnabled }
+                    .distinctUntilChanged()
+                    .collect { enabled ->
+                        musicManager.setEnabled(enabled)
+                    }
+            }
 
             val textScale = TextScale(
                 fontScale = userPreferences.fontSizeMultiplier,
@@ -72,5 +88,20 @@ class MainActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        musicManager.start()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        musicManager.pause()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        musicManager.release()
     }
 }

@@ -112,4 +112,10 @@ class ProfileViewModel @Inject constructor(
             userPreferencesRepository.setFontFamilyName(name)
         }
     }
+
+    fun setMusicEnabled(enabled: Boolean) {
+        viewModelScope.launch {
+            userPreferencesRepository.setMusicEnabled(enabled)
+        }
+    }
 }

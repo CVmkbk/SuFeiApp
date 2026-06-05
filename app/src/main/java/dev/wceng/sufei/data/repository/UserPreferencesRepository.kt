@@ -15,5 +15,6 @@ interface UserPreferencesRepository {
     suspend fun setUseDynamicColor(use: Boolean)
     suspend fun setUseDarkTheme(use: Boolean)
     suspend fun setFontFamilyName(name: String)
+    suspend fun setMusicEnabled(enabled: Boolean)
     suspend fun updateDailyPoem(poemId: String, timestamp: Long)
 }
