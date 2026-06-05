@@ -3,6 +3,7 @@ package dev.wceng.sufei.ui.screens.feihualing
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -53,13 +54,17 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import dev.wceng.sufei.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -113,14 +118,23 @@ fun FeiHuaLingScreen(
             )
         },
         snackbarHost = { SnackbarHost(snackbarHostState) },
-        containerColor = MaterialTheme.colorScheme.background
+        containerColor = Color.Transparent
     ) { innerPadding ->
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
                 .imePadding()
         ) {
+            Image(
+                painter = painterResource(id = R.drawable.bg_feihualing),
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .alpha(0.15f)
+            )
+            Column(modifier = Modifier.fillMaxSize()) {
             AnimatedVisibility(
                 visible = uiState.gamePhase == GamePhase.PLAYING || uiState.gamePhase == GamePhase.FINISHED,
                 enter = fadeIn(),
@@ -239,7 +253,8 @@ fun FeiHuaLingScreen(
                 }
             }
         }
-    }
+    } // Box
+    } // Scaffold
 }
 
 @Composable

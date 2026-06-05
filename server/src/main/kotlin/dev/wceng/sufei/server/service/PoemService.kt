@@ -26,11 +26,10 @@ object PoemService {
                 """
                 SELECT p.id, p.title, p.author, p.dynasty, p.content, 
                        GROUP_CONCAT(pt.tag_name) as tags
-                FROM poems p
+                FROM (SELECT * FROM poems ORDER BY created_at DESC LIMIT ? OFFSET ?) p
                 LEFT JOIN poem_tags pt ON p.id = pt.poem_id
                 GROUP BY p.id
                 ORDER BY p.created_at DESC
-                LIMIT ? OFFSET ?
                 """.trimIndent()
             ).use { stmt ->
                 stmt.setInt(1, limit)

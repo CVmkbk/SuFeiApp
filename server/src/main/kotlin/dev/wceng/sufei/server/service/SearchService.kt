@@ -57,9 +57,12 @@ object SearchService {
         }
 
         val whereClause = if (conditions.isNotEmpty()) "WHERE ${conditions.joinToString(" AND ")}" else ""
+        val hasFilter = conditions.isNotEmpty()
 
         DatabaseFactory.getDataSource().connection.use { conn ->
-            val sql = """
+            val sql = if (hasFilter) {
+                // 有过滤条件时，WHERE 已大幅缩小数据范围，直接 JOIN 性能可接受
+                """
                 SELECT p.id, p.title, p.author, p.dynasty, p.content,
                        GROUP_CONCAT(pt.tag_name) as tags
                 FROM poems p
@@ -67,11 +70,25 @@ object SearchService {
                 $whereClause
                 GROUP BY p.id
                 LIMIT ?
-            """.trimIndent()
+                """.trimIndent()
+            } else {
+                // 无过滤条件时，子查询先 LIMIT 再 JOIN tags，避免对全表 GROUP BY
+                """
+                SELECT p.id, p.title, p.author, p.dynasty, p.content,
+                       GROUP_CONCAT(pt.tag_name) as tags
+                FROM (SELECT * FROM poems LIMIT ?) p
+                LEFT JOIN poem_tags pt ON p.id = pt.poem_id
+                GROUP BY p.id
+                """.trimIndent()
+            }
 
             conn.prepareStatement(sql).use { stmt ->
-                params.forEachIndexed { index, param -> stmt.setObject(index + 1, param) }
-                stmt.setObject(params.size + 1, limit)
+                if (hasFilter) {
+                    params.forEachIndexed { index, param -> stmt.setObject(index + 1, param) }
+                    stmt.setObject(params.size + 1, limit)
+                } else {
+                    stmt.setInt(1, limit)
+                }
                 stmt.executeQuery().use { rs ->
                     while (rs.next()) {
                         items.add(toSearchPoemItem(rs))
