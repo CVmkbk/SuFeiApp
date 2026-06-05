@@ -352,6 +352,8 @@ fun PoemReader(
 private fun PoemBody(paragraphs: List<String>, currentSentenceIndex: Int?) {
     var globalVerseIndex = 3 // 从 3 开始，因为 0:标题, 1:朝代, 2:作者
     val textScale = LocalTextScale.current
+    val versePaddingVertical = (4 * textScale.lineHeightScale).dp
+    val paragraphSpacing = (16 * textScale.lineHeightScale).dp
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         paragraphs.forEach { paragraph ->
             FlowRow(
@@ -371,12 +373,12 @@ private fun PoemBody(paragraphs: List<String>, currentSentenceIndex: Int?) {
                             color = if (isHighlight) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onBackground
                         ).scaledBy(textScale),
                         softWrap = false,
-                        modifier = Modifier.padding(horizontal = 6.dp, vertical = 4.dp)
+                        modifier = Modifier.padding(horizontal = 6.dp, vertical = versePaddingVertical)
                     )
                     globalVerseIndex++
                 }
             }
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(paragraphSpacing))
         }
     }
 }
