@@ -139,16 +139,35 @@ fun HomeScreen(
 
 /**
  * 判断是否为词/曲
+ *
+ * 三个维度综合判断：
+ * 1. 标签维度：是否显式标注"词""曲""诗余"
+ * 2. 标题维度：是否含词牌间隔号 "·"（如"水调歌头·明月几时有"）
+ * 3. 句式维度：按标点拆成短句后，检查是否等长五言/七言（诗的句式整齐，词则长短错落）
  */
 private fun isCi(poem: Poem): Boolean {
+    // 维度1：标签识别
     if (poem.tags.any { it.contains("词") || it.contains("曲") || it.contains("诗余") }) return true
+    // 维度2：标题识别（词牌名通常含间隔号）
     if (poem.title.contains("·") || poem.title.contains("・")) return true
-    
-    val lines = poem.content.lines().filter { it.isNotBlank() }
-    if (lines.isEmpty()) return false
-    val lengths = lines.map { it.filter { char -> char.isLetterOrDigit() }.length }
+
+    // 维度3：句式分析 —— 按中文标点拆分为短句，检查是否为整齐的五言/七言
+    val phrases = poem.content
+        .split(Regex("[，。！？；、：\"\"''（）\\s]+"))
+        .map { it.trim() }
+        .filter { it.isNotBlank() }
+
+    if (phrases.isEmpty()) return false
+
+    // 使用 code 属性做 codePoint 级判断，确保中文字符被正确识别为 Letter
+    val lengths = phrases.map { phrase ->
+        phrase.count { char -> Character.isLetter(char.code) }
+    }.filter { it > 0 }
+
+    if (lengths.isEmpty()) return false
+
+    // 所有短句长度相等 且 为 5 或 7 → 是整齐的诗，否则为词/曲
     val isRegularPoem = lengths.all { it == 5 || it == 7 } && lengths.distinct().size == 1
-    
     return !isRegularPoem
 }
 
@@ -167,13 +186,11 @@ private fun extractHighlight(poem: Poem): List<String> {
     if (fullSentences.isEmpty()) return listOf(content.take(12))
 
     val targetFullSentence = if (isCiPoem) {
+        // 词：提取最后一句（结拍），往往是全词点睛之笔
         fullSentences.last()
     } else {
-        val allPhrases = content.split(Regex("(?<=[，。！？])")).map { it.trim() }.filter { it.isNotEmpty() }
-        when {
-            allPhrases.size >= 8 && fullSentences.size >= 2 -> fullSentences[1]
-            else -> fullSentences.first()
-        }
+        // 诗：提取第二句，第一句起兴第二句进入主题，意境完整
+        if (fullSentences.size >= 2) fullSentences[1] else fullSentences.first()
     }
 
     return targetFullSentence
